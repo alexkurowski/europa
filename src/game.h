@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include "states/state.h"
 #include "states/play.h"
+#include "../lib/graphics.h"
 
 class Game {
   public:

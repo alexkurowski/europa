@@ -1,10 +1,12 @@
 #include "base.h"
 
 Base::Base() {
-  character = new Character();
+  background.texture = Graphics::I()->loadTexture("assets/images/base_background.png");
+  Graphics::I()->setSize(&background);
+  background.rect.x = Graphics::I()->originalWidth() / 2 - background.rect.w / 2;
+  background.rect.y = Graphics::I()->originalHeight() / 2 - background.rect.h / 2;
 
-  // background = IMG_Load("../../assets/images/base_background.png");
-  background = graphics->loadTexture("assets/images/base_background.png");
+  character = new Character(&background.rect);
 }
 
 Base::~Base() {
@@ -12,10 +14,24 @@ Base::~Base() {
 }
 
 void Base::update() {
+  character->update();
 }
 
 void Base::draw() {
-  graphics->setColor(255, 255, 255);
-  graphics->line(0, 0, 1920, 1080);
-  graphics->draw(background, 0, 0, 1200, 720);
+  Graphics::I()->setColor(255, 255, 255);
+  Graphics::I()->draw(background.texture, &background.rect);
+
+  character->draw();
+}
+
+//=============================================================================
+
+void Base::moveTo(Position pos) {
+  if (pos.x < background.rect.x ||
+      pos.x > background.rect.x + background.rect.w ||
+      pos.y < background.rect.y ||
+      pos.y > background.rect.y + background.rect.h)
+    return;
+
+  character->moveTo(pos);
 }

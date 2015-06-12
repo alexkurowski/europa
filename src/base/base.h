@@ -1,9 +1,8 @@
 #pragma once
 
 #include "character.h"
-#include "../../lib/sdlgraphics.h"
-
-extern SDLGraphics* graphics;
+#include "../../lib/graphics.h"
+#include "../../lib/data.h"
 
 class Base {
   public:
@@ -13,8 +12,10 @@ class Base {
     void update();
     void draw();
 
+    void moveTo(Position pos);
+
   private:
     Character* character;
 
-    SDL_Texture* background;
+    Texture background;
 };

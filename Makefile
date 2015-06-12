@@ -6,8 +6,8 @@ EXE_NAME = test
 EXE = -o $(EXE_NAME)
 
 SOURCES  = main.cpp
-SOURCES += lib/data.cpp
-SOURCES += lib/sdlgraphics.cpp
+SOURCES += lib/data.h
+SOURCES += lib/graphics.cpp
 SOURCES += src/game.cpp
 
 SOURCES += src/base/base.cpp

@@ -15,6 +15,8 @@ class Play : public State {
     void update() override;
     void draw() override;
 
+    void leftClick(Position pos) override;
+
   private:
     Base* base;
     Terminal* terminals[TERMINAL_COUNT];

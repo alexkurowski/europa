@@ -1,12 +1,8 @@
 #include "state.h"
 
-State::State() {
-  std::cout << "State constructor" << std::endl;
-}
+State::State() {}
 State::~State() {}
-
-void State::update() {
-  std::cout << "State update" << std::endl;
-}
-
+void State::update() {}
 void State::draw() {}
+void State::leftClick(Position pos) {}
+void State::rightClick(Position pos) {}
