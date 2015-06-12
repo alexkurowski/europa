@@ -20,6 +20,9 @@ class Graphics {
     int currentWidth();
     int currentHeight();
 
+    bool cap();
+    float dt();
+
     void beginDraw();
     void endDraw();
 
@@ -53,4 +56,10 @@ class Graphics {
     float scale;
 
     void setScale();
+
+    float _dt;
+    unsigned int lastTime = 0;
+    unsigned int currentTime;
+    const float framerateTime = (float)(1000 / 60);
+    const float maxdt = framerateTime / 1000;
 };

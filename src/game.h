@@ -10,7 +10,7 @@ class Game {
     Game();
     ~Game();
 
-    bool quit;
+    bool active = true;
 
     void input();
     void update();

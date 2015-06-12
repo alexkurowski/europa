@@ -1,8 +1,6 @@
 #include "game.h"
 
 Game::Game() {
-  quit = false;
-
   state = new Play();
 }
 
@@ -24,7 +22,7 @@ void Game::input() {
         break;
 
       case SDL_QUIT:
-        quit = true;
+        active = false;
         break;
     }
   }

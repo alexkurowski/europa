@@ -15,6 +15,7 @@ Base::~Base() {
 
 void Base::update() {
   character->update();
+  character->keepInside(&background.rect);
 }
 
 void Base::draw() {

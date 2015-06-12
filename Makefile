@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -std=c++11 `sdl2-config --cflags`
 LIBS = `sdl2-config --libs` -lSDL2_image -lSDL2_mixer
 
-EXE_NAME = test
+EXE_NAME = e
 EXE = -o $(EXE_NAME)
 
 SOURCES  = main.cpp

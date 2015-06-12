@@ -5,12 +5,14 @@
 #include <cmath>
 
 struct Movement {
+  Position position;
   Position speed;
   Position target;
-  const float maxSpeed = 6;
-  const float maxRunSpeed = 2;
-  const float acceleration = 1;
-  const float deceleration = 0.9;
+  bool run = false;
+  const float maxSpeed = 160;
+  const float maxRunSpeed = 260;
+  const float acceleration = 1200;
+  const float deceleration = 54;
   const float stopDistance = 20;
 
   float distanceToTarget(float x, float y) {
@@ -29,6 +31,7 @@ class Character {
 
     void moveTo(Position);
     void updateMove();
+    void keepInside(SDL_Rect*);
 
   private:
     Texture sprite;
@@ -36,4 +39,8 @@ class Character {
     Movement move;
 
     SDL_Rect border;
+
+    unsigned int lastClick = 0;
+    unsigned int currentTime = 0;
+    const int doubleClickTime = 600;
 };

@@ -52,6 +52,22 @@ void Graphics::setup(int width, int height, const char* title) {
 
 //=============================================================================
 
+bool Graphics::cap() {
+  currentTime = SDL_GetTicks();
+  if (currentTime < lastTime + framerateTime) return true;
+
+  _dt = ((float)(currentTime - lastTime)) / 1000;
+  if (_dt > maxdt) _dt = maxdt;
+  lastTime = currentTime;
+  return false;
+}
+
+float Graphics::dt() {
+  return _dt;
+}
+
+//=============================================================================
+
 void Graphics::beginDraw() {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);

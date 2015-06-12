@@ -24,6 +24,5 @@ void Play::draw() {
 //=============================================================================
 
 void Play::leftClick(Position pos) {
-  printf("%f %f\n", pos.x, pos.y);
   base->moveTo(pos);
 }

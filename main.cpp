@@ -21,7 +21,9 @@ int main() {
 
   // main loop
   // Game game;
-  while (!game->quit) {
+  while (game->active) {
+    if (Graphics::I()->cap()) continue;
+
     game->input();
 
     game->update();
