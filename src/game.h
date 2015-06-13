@@ -19,5 +19,10 @@ class Game {
   private:
     SDL_Event event;
 
+    unsigned int frame  = 0;
+    unsigned int sec = 0;
+
     State* state;
+
+    void printFPS();
 };

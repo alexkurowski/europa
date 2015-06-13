@@ -69,7 +69,8 @@ float Graphics::dt() {
 //=============================================================================
 
 void Graphics::beginDraw() {
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  setColor(0, 0, 0);
+  setBlendMode("none");
   SDL_RenderClear(renderer);
 }
 
@@ -82,6 +83,14 @@ void Graphics::endDraw() {
 void Graphics::setScale() {
   scale = fmin(currentSize.w / (double)originalSize.w,
                currentSize.h / (double)originalSize.h);
+
+  termScale = 2;
+  if (currentSize.w > TERMINAL_WIDTH * 4 &&
+      currentSize.h > TERMINAL_HEIGHT * 4)
+    termScale = 4;
+  if (currentSize.w > TERMINAL_WIDTH * 6 &&
+      currentSize.h > TERMINAL_HEIGHT * 6)
+    termScale = 6;
 }
 
 float Graphics::getScale() {
@@ -113,40 +122,88 @@ void Graphics::setSize(SDL_Texture* texture, SDL_Rect &rect) {
 
 //=============================================================================
 
+void Graphics::baseScale() {
+  SDL_RenderSetScale(renderer, scale, scale);
+}
+
+void Graphics::screenScale() {
+  SDL_RenderSetScale(renderer, termScale, termScale);
+}
+
+Position Graphics::getScreenScaledOffset() {
+  Position pos;
+  pos.x = (currentSize.w / 2 - TERMINAL_WIDTH * termScale / 2) / termScale;
+  pos.y = (currentSize.h / 2 - TERMINAL_HEIGHT * termScale / 2) / termScale;
+  return pos;
+}
+
 void Graphics::setColor(int r, int g, int b, int a) {
   SDL_SetRenderDrawColor(renderer, r, g, b, a);
 }
 
+void Graphics::setBlendMode(const char* mode) {
+  if (strcmp(mode, "none") == 0)
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+  if (strcmp(mode, "add") == 0)
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_ADD);
+  if (strcmp(mode, "blend") == 0)
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+  if (strcmp(mode, "mod") == 0)
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_MOD);
+}
+
+void Graphics::point(int x, int y) {
+  SDL_RenderDrawPoint(renderer, x, y);
+}
+
 void Graphics::line(int x1, int y1, int x2, int y2) {
-  SDL_RenderDrawLine(renderer, x1 * scale,
-                               y1 * scale,
-                               x2 * scale,
-                               y2 * scale);
+  SDL_RenderDrawLine(renderer, x1,
+                               y1,
+                               x2,
+                               y2);
+}
+
+void Graphics::rectangle(int x, int y, int w, int h) {
+  rect->x = x;
+  rect->y = y;
+  rect->w = w;
+  rect->h = h;
+
+  SDL_RenderFillRect(renderer, rect);
+}
+
+void Graphics::rectangle(SDL_Rect* r) {
+  rect->x = r->x;
+  rect->y = r->y;
+  rect->w = r->w;
+  rect->h = r->h;
+
+  SDL_RenderFillRect(renderer, rect);
 }
 
 void Graphics::draw(SDL_Texture* source, int x, int y, int w, int h) {
-  rect->x = x * scale;
-  rect->y = y * scale;
-  rect->w = w * scale;
-  rect->h = h * scale;
+  rect->x = x;
+  rect->y = y;
+  rect->w = w;
+  rect->h = h;
 
   if (SDL_RenderCopy(renderer, source, NULL, rect) != 0)
     printf("%s\n", SDL_GetError());
 }
 
 void Graphics::draw(SDL_Texture* source, SDL_Rect* r) {
-  rect->x = r->x * scale;
-  rect->y = r->y * scale;
-  rect->w = r->w * scale;
-  rect->h = r->h * scale;
+  rect->x = r->x;
+  rect->y = r->y;
+  rect->w = r->w;
+  rect->h = r->h;
 
   if (SDL_RenderCopy(renderer, source, NULL, rect) != 0)
     printf("%s\n", SDL_GetError());
 }
 
 void Graphics::blit(SDL_Surface* source, int x, int y, int w, int h) {
-  rect->x = x * scale;
-  rect->y = y * scale;
+  rect->x = x;
+  rect->y = y;
   rect->w = w;
   rect->h = h;
 

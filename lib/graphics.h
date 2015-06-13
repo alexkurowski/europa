@@ -31,10 +31,20 @@ class Graphics {
     void setSize(Texture*);
     void setSize(SDL_Texture*, SDL_Rect&);
 
+    void baseScale();
+    void screenScale();
+
+    Position getScreenScaledOffset();
+
     void setColor(int r, int g, int b, int a = 255);
+    void setBlendMode(const char*);
+    void point(int, int);
     void line(int, int, int, int);
+    void rectangle(int, int, int, int);
+    void rectangle(SDL_Rect*);
     void draw(SDL_Texture*, int, int, int, int);
     void draw(SDL_Texture*, SDL_Rect*);
+
     void blit(SDL_Surface*, int, int, int, int);
 
   private:
@@ -54,6 +64,7 @@ class Graphics {
     SDL_Rect* rect;
 
     float scale;
+    float termScale;
 
     void setScale();
 

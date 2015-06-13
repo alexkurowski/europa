@@ -33,6 +33,8 @@ class Character {
     void updateMove();
     void keepInside(SDL_Rect*);
 
+    bool isStanding();
+
   private:
     Texture sprite;
 

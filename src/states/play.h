@@ -3,9 +3,9 @@
 #include <iostream>
 #include "state.h"
 #include "../base/base.h"
+#include "../screen/screen.h"
 #include "../terminals/terminal.h"
-
-const int TERMINAL_COUNT = 4;
+#include "../../lib/data.h"
 
 class Play : public State {
   public:
@@ -19,6 +19,8 @@ class Play : public State {
 
   private:
     Base* base;
-    Terminal* terminals[TERMINAL_COUNT];
+    Screen* screen;
 
+    int currentTerminal = -1;
+    int nextTerminal = -1;
 };

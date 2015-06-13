@@ -30,8 +30,21 @@ void Game::input() {
 
 void Game::update() {
   state->update();
+
+  // printFPS();
 }
 
 void Game::draw() {
   state->draw();
+}
+
+
+void Game::printFPS() {
+  frame++;
+  int currentTime = SDL_GetTicks();
+  if (currentTime - sec > 1000) {
+    sec = currentTime;
+    printf("%i\n", frame);
+    frame = 0;
+  }
 }

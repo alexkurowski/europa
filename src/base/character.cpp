@@ -47,7 +47,7 @@ void Character::moveTo(Position pos) {
 }
 
 void Character::updateMove() {
-  if (move.distanceToTarget(move.position.x, move.position.y) > move.stopDistance) {
+  if (!isStanding()) {
     float max = move.run ? move.maxRunSpeed : move.maxSpeed;
 
     // difference between target and position
@@ -82,4 +82,10 @@ void Character::keepInside(SDL_Rect* rect) {
   if (move.position.x > rect->x + rect->w) move.position.x = rect->x + rect->w;
   if (move.position.y < rect->y)           move.position.y = rect->y;
   if (move.position.y > rect->y + rect->h) move.position.y = rect->y + rect->h;
+}
+
+bool Character::isStanding() {
+  if (move.distanceToTarget(move.position.x, move.position.y) > move.stopDistance)
+    return false;
+  return true;
 }

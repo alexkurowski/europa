@@ -1,24 +1,31 @@
 #include "play.h"
 
 Play::Play() {
-  base = new Base();
+  base   = new Base();
+  screen = new Screen();
 
-  terminals[0] = new Terminal();
+  Terminal* terminal = new Terminal();
+  base->addTerminal(terminal);
+  screen->addTerminal(terminal);
 }
 
 Play::~Play() {
   delete base;
-
-  for (int i = 0; i < TERMINAL_COUNT; i++)
-    delete terminals[i];
+  delete screen;
 }
 
 void Play::update() {
   base->update();
+
+  screen->setNextTerminal(base->currentTerminal());
+  screen->update();
 }
 
 void Play::draw() {
+  Graphics::I()->baseScale();
   base->draw();
+  Graphics::I()->screenScale();
+  screen->draw();
 }
 
 //=============================================================================

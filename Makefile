@@ -13,6 +13,8 @@ SOURCES += src/game.cpp
 SOURCES += src/base/base.cpp
 SOURCES += src/base/character.cpp
 
+SOURCES += src/screen/screen.cpp
+
 SOURCES += src/terminals/terminal.cpp
 
 SOURCES += src/states/state.cpp
