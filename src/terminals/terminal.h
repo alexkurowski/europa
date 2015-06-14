@@ -9,34 +9,37 @@
 #include "../../lib/keyboard.h"
 #include "../../lib/data.h"
 
-#define TERMINAL_MEMORY     0xFFFF
-#define TERMINAL_STACK_SIZE 0x0F
+#include "components/memory.h"
+#include "components/display.h"
 
-#define SHELL_WIDTH         0x28
-#define SHELL_HEIGHT        0x19
-
-#define CURRENT_ADDRESS     0x0010
-#define PREVIOUS_ADDRESS    0x0012
-
-#define KEYBOARD_INPUT      0x0020
-
-#define SCREEN_MODE         0x0040
-
-#define FONT_ADDRESS        0x0100
-
-#define USER_ADDRESS        0x1000
-#define END_USER_ADDRESS    0x7FFF
-
-#define ACTIVE_INPUT        0x8400
-#define INPUT_ROW           0x8401
-#define INPUT_COL           0x8402
-#define BLINK_COUNTER       0x8403
-
-#define SCREEN_ADDRESS      0x8000
-#define SHELL_SCREEN_END    0x83E8
-#define BITMAP_SCREEN_END   0xFCFF
-#define CURRENT_COLORS      0xFD00
-#define COLORS_ADDRESS      0xFD01
+// #define TERMINAL_MEMORY     0xFFFF
+// #define TERMINAL_STACK_SIZE 0x0F
+//
+// #define SHELL_WIDTH         0x28
+// #define SHELL_HEIGHT        0x19
+//
+// #define CURRENT_ADDRESS     0x0010
+// #define PREVIOUS_ADDRESS    0x0012
+//
+// #define KEYBOARD_INPUT      0x0020
+//
+// #define SCREEN_MODE         0x0040
+//
+// #define FONT_ADDRESS        0x0100
+//
+// #define USER_ADDRESS        0x1000
+// #define END_USER_ADDRESS    0x7FFF
+//
+// #define ACTIVE_INPUT        0x8400
+// #define INPUT_ROW           0x8401
+// #define INPUT_COL           0x8402
+// #define BLINK_COUNTER       0x8403
+//
+// #define SCREEN_ADDRESS      0x8000
+// #define SHELL_SCREEN_END    0x83E8
+// #define BITMAP_SCREEN_END   0xFCFF
+// #define CURRENT_COLORS      0xFD00
+// #define COLORS_ADDRESS      0xFD01
 
 
 class Terminal {
@@ -45,67 +48,65 @@ class Terminal {
     ~Terminal();
 
     void update();
-    void draw(int);
+    void draw(uint8_t);
 
     void turnOn();
     void turnOff();
     bool isActive();
 
   private:
-    uint16_t p = 0;
-    uint16_t _p = 0;
-    uint8_t memory[TERMINAL_MEMORY];
-    uint8_t stack[TERMINAL_STACK_SIZE];
-
-    Position offset;
-    const int margin = 40;
+    Memory* mem;
+    Display* display;
 
     bool active = false;
 
-    float uptime = 0;
+    void setSleep(float, void (Terminal::*)());
+    void setSleep(float);
     float sleep = 0;
-    const float bootTime = 0.6; // 1.2
-    const float inputSleep = 0.6;
-
-    char inputString[40];
-
-    void reset();
-    void resetShell();
-    void readyBeforeInput();
-    void readyInput();
-    void processInput();
-
-    void processCommand();
-    void shellPrintOutput();
-
-    bool isBooting();
+    void (Terminal::*afterSleep)() = NULL;
+    bool doAfterSleep;
     bool isSleeping();
 
-    bool inShell();
-    bool inBitmap();
+    const float bootTime   = 0.6; // 1.2
+    const float inputDelay = 0.6;
 
-    void input();
-    void shellInput();
-    uint16_t inputGetCurrentPosition();
-    uint16_t inputGetStartOfLine();
-    uint16_t inputGetEndOfLine();
-    uint8_t inputGetCharacter();
-    void inputPutCharacter(uint8_t);
+    void afterBoot();
 
-    void shellNextLine();
+    // void resetShell();
+    // void readyBeforeInput();
+    // void readyInput();
+    // void processInput();
 
-    void loadColors();
+    // void processCommand();
+    // void shellPrintOutput();
 
-    void drawBackground(int);
-    void drawScreen(int);
 
-    void drawShellMode(int);
-    void drawBitmapMode(int);
+    // bool inShell();
+    // bool inBitmap();
 
-    uint8_t randomRange(int, int);
-    uint8_t getBitAt(uint8_t, uint8_t);
-    uint8_t getLeft(uint8_t);
-    uint8_t getRight(uint8_t);
+    // void input();
+    // void shellInput();
+    // uint16_t inputGetCurrentPosition();
+    // uint16_t inputGetStartOfLine();
+    // uint16_t inputGetEndOfLine();
+    // uint8_t inputGetCharacter();
+    // void inputPutCharacter(uint8_t);
+
+    // void shellNextLine();
+    // void shellCommandRun();
+    // void shellCommandEdit();
+    // void shellCommandList();
+    // void shellCommandHelp();
+
+    // void loadColors();
+
+    // void drawBackground(int);
+    // void drawScreen(int);
+
+    // void drawShellMode(int);
+    // void drawBitmapMode(int);
+
+    // uint8_t randomRange(int, int);
 
     std::string command;
     std::string output;
@@ -145,4 +146,13 @@ class Terminal {
     // "                                        " // 200
     const char* greetText = "                                                **** CPI 6064 SHELL ****              COPYRIGHT 2001 JUPITER GROUP              64K RAM SYSTEM  32K FREE                                                ";
     const char* newInputLine = "READY.                                  ";
+    // " LIST      - DISPLAY NAMES OF AVAILABLE "
+    // "             PROGRAMS                   "
+    // " RUN NAME  - RUN PROGRAM WITH A GIVEN   "
+    // "             NAME                       "
+    // " EDIT NAME - LOAD PROGRAM WITH A GIVEN  "
+    // "             NAME AND OPEN EDITOR       "
+    // "                                        " // 280
+    const std::string helpText = " LIST      - DISPLAY NAMES OF AVAILABLE              PROGRAMS                    RUN NAME  - RUN PROGRAM WITH A GIVEN                NAME                        EDIT NAME - LOAD PROGRAM WITH A GIVEN               NAME AND OPEN EDITOR                                               ";
+
 };

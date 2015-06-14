@@ -6,7 +6,7 @@ EXE_NAME = e
 EXE = -o $(EXE_NAME)
 
 SOURCES  = main.cpp
-SOURCES += lib/data.h
+SOURCES += lib/data.cpp
 SOURCES += lib/graphics.cpp
 SOURCES += lib/keyboard.cpp
 SOURCES += src/game.cpp
@@ -16,6 +16,8 @@ SOURCES += src/base/character.cpp
 
 SOURCES += src/screen/screen.cpp
 
+SOURCES += src/terminals/components/display.cpp
+SOURCES += src/terminals/components/memory.cpp
 SOURCES += src/terminals/terminal.cpp
 
 SOURCES += src/states/state.cpp
