@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <random>
+#include <algorithm>
 #include "../../lib/graphics.h"
 #include "../../lib/keyboard.h"
 #include "../../lib/data.h"
@@ -52,6 +53,7 @@ class Terminal {
 
   private:
     uint16_t p = 0;
+    uint16_t _p = 0;
     uint8_t memory[TERMINAL_MEMORY];
     uint8_t stack[TERMINAL_STACK_SIZE];
 
@@ -62,8 +64,8 @@ class Terminal {
 
     float uptime = 0;
     float sleep = 0;
-    const float bootTime = 1;
-    const float inputSleep = 1;
+    const float bootTime = 0.6; // 1.2
+    const float inputSleep = 0.6;
 
     char inputString[40];
 
@@ -71,6 +73,10 @@ class Terminal {
     void resetShell();
     void readyBeforeInput();
     void readyInput();
+    void processInput();
+
+    void processCommand();
+    void shellPrintOutput();
 
     bool isBooting();
     bool isSleeping();
@@ -80,8 +86,13 @@ class Terminal {
 
     void input();
     void shellInput();
+    uint16_t inputGetCurrentPosition();
+    uint16_t inputGetStartOfLine();
+    uint16_t inputGetEndOfLine();
     uint8_t inputGetCharacter();
     void inputPutCharacter(uint8_t);
+
+    void shellNextLine();
 
     void loadColors();
 
@@ -95,6 +106,9 @@ class Terminal {
     uint8_t getBitAt(uint8_t, uint8_t);
     uint8_t getLeft(uint8_t);
     uint8_t getRight(uint8_t);
+
+    std::string command;
+    std::string output;
 
     uint8_t colors[16][3];
     uint8_t fg;

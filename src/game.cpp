@@ -21,12 +21,9 @@ void Game::input() {
           state->rightClick(pos);
         break;
 
-      case SDL_KEYDOWN:
-        Keyboard::I()->keyDown(event.key);
-        break;
-
       case SDL_KEYUP:
-        Keyboard::I()->keyUp(event.key);
+      case SDL_KEYDOWN:
+        Keyboard::I()->keyEvent(event.key);
         break;
 
       case SDL_QUIT:

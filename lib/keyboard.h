@@ -5,6 +5,18 @@
 
 #define INPUT_LENGTH 0x80
 
+struct shellInputKeys {
+  bool text[INPUT_LENGTH] = { false };
+
+  bool Delete;
+  bool Backspace;
+  bool Enter;
+
+  bool Left;
+  bool Right;
+  bool Up;
+  bool Down;
+};
 
 class Keyboard {
   public:
@@ -15,14 +27,16 @@ class Keyboard {
     void update();
     void after();
 
-    void keyDown(SDL_KeyboardEvent&);
-    void keyUp(SDL_KeyboardEvent&);
+    void keyEvent(SDL_KeyboardEvent&);
 
     bool isUp(char);
     bool isDown(char);
 
-    bool* getShellKeys();
+    shellInputKeys* getShellKeys();
     bool* getModKeys();
+    float* getArrowKeys();
+
+    int getShellInputKey(int);
 
   private:
     Keyboard();
@@ -33,10 +47,12 @@ class Keyboard {
     static Keyboard* _instance;
 
     float keys[INPUT_LENGTH];
-    bool shellKeys[INPUT_LENGTH] = { false };
-    bool modKeys[3] = { false }; // shift, ctrl, alt
+    shellInputKeys shellKeys;
+    bool modKeys[4] = { false }; // shift, ctrl, alt, delete
+    float arrowKeys[4] = { 0 }; // left, right, up, down
 
-    bool isDownShell(char);
+    bool isDownShell(float);
+    void updateShellKeys();
 
     uint8_t ignoreStart = 0;
     uint8_t ignoreEnd = 1;
