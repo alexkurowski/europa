@@ -71,6 +71,7 @@ class Terminal {
     const float inputDelay = 0.6;
 
     void afterBoot();
+    void beforeInput();
 
     // void resetShell();
     // void readyBeforeInput();

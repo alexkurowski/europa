@@ -11,7 +11,10 @@ void Display::draw(uint8_t  mode,
                    colorBit memoryCurrentColors,
                    uint8_t* font,
                    uint8_t* screen,
+                   bool     acceptInput,
+                   Position inputPosition,
                    uint8_t  memoryAlpha) {
+
   colors        = memoryColors;
   currentColors = memoryCurrentColors;
   alpha         = memoryAlpha;
@@ -19,7 +22,7 @@ void Display::draw(uint8_t  mode,
   drawBackground();
   switch (mode) {
     case 0: // shell
-      drawShell(screen, font);
+      drawShell(screen, font, acceptInput, inputPosition);
       break;
     case 1: // bitmap
       drawBitmap(screen);
@@ -35,19 +38,23 @@ void Display::drawBackground() {
                            offset.y - BACKGROUND_MARGIN,
                            TERMINAL_SCREEN_WIDTH + BACKGROUND_MARGIN * 2,
                            TERMINAL_SCREEN_HEIGHT + BACKGROUND_MARGIN * 2);
-  Graphics::I()->setColor(colors[currentColors[1]][0],
-                          colors[currentColors[1]][1],
-                          colors[currentColors[1]][2], alpha);
-  Graphics::I()->rectangle(offset.x,
-                           offset.y,
-                           TERMINAL_SCREEN_WIDTH,
-                           TERMINAL_SCREEN_HEIGHT);
+  // Graphics::I()->setColor(colors[currentColors[1]][0],
+  //                         colors[currentColors[1]][1],
+  //                         colors[currentColors[1]][2], alpha);
+  // Graphics::I()->rectangle(offset.x,
+  //                          offset.y,
+  //                          TERMINAL_SCREEN_WIDTH,
+  //                          TERMINAL_SCREEN_HEIGHT);
 }
 
-void Display::drawShell(uint8_t* screen, uint8_t* font) {
+void Display::drawShell(uint8_t* screen,
+                        uint8_t* font,
+                        bool acceptInput,
+                        Position inputPosition) {
   uint16_t p = 0;
-  uint8_t ch;
-  uint8_t _p, x, y, bit, col;
+  uint16_t _p;
+  uint16_t x, y;
+  uint8_t ch, bit, col;
   x = 0;
   y = 0;
   while (p < SHELL_SCREEN_SIZE) {
@@ -58,18 +65,15 @@ void Display::drawShell(uint8_t* screen, uint8_t* font) {
       for (int i = 0; i < SHELL_CHAR_SIZE; i++) {
         bit = getBitAt(font[_p + j], 7 - i);
 
-        if (bit == 1)
-          col = currentColors[0];
-        else
-          col = currentColors[1];
+        col = currentColors[bit ^ 1];
 
-        // ACCEPT_INPUT?
-        // if (memory[ACTIVE_INPUT] != 0)
-        //   if (p == SCREEN_ADDRESS + memory[INPUT_ROW] * SHELL_WIDTH + memory[INPUT_COL])
-        //     if (col == fg) col = bg;
-        //     else           col = fg;
+        if (acceptInput)
+          if (p == inputPosition.y * TERMINAL_SHELL_WIDTH + inputPosition.x)
+            col = currentColors[bit];
 
-        Graphics::I()->setColor(colors[col][0], colors[col][1], colors[col][2], alpha);
+        Graphics::I()->setColor(colors[col][0],
+                                colors[col][1],
+                                colors[col][2], alpha);
         Graphics::I()->point(x + i + offset.x,
                              y + j + offset.y);
       }

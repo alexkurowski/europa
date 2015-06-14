@@ -27,14 +27,16 @@ void Terminal::draw(uint8_t alpha) {
                 mem->getCurrentColors(),
                 mem->fontAddress(),
                 mem->screenAddress(),
+                mem->isAcceptInput(),
+                mem->inputPosition(),
                 alpha);
 }
 
 //=============================================================================
 
 void Terminal::turnOn() {
-  mem->buildDefaultRAM();
   active = true;
+  mem->buildDefaultRAM();
   setSleep(bootTime, &Terminal::afterBoot);
 }
 
@@ -49,8 +51,12 @@ bool Terminal::isActive() {
 //=============================================================================
 
 void Terminal::afterBoot() {
-  // restart shell
-  printf("AFTER BOOT");
+  mem->reboot();
+  setSleep(inputDelay, &Terminal::beforeInput);
+}
+
+void Terminal::beforeInput() {
+  mem->acceptInput();
 }
 
 //=============================================================================
@@ -73,8 +79,8 @@ bool Terminal::isSleeping() {
 
   sleep -= Graphics::I()->dt();
   if (sleep <= 0 && doAfterSleep) {
-    (*this.*afterSleep)();
     doAfterSleep = false;
+    (*this.*afterSleep)();
   }
 
   return true;

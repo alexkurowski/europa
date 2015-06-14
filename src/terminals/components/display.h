@@ -9,6 +9,9 @@
 #define TERMINAL_SCREEN_WIDTH  320
 #define TERMINAL_SCREEN_HEIGHT 200
 
+#define TERMINAL_SHELL_WIDTH   40
+#define TERMINAL_SHELL_HEIGHT  25
+
 #define SHELL_SCREEN_SIZE      0x03E8
 #define SHELL_CHAR_SIZE        0x0008
 #define SHELL_FONT_SIZE        0x0400
@@ -22,16 +25,18 @@ class Display {
     Display();
     ~Display();
 
-    void draw(uint8_t,
-              colorMap,
-              colorBit,
-              uint8_t*,
-              uint8_t*,
-              uint8_t);
+    void draw(uint8_t,  // screen mode
+              colorMap, // colors
+              colorBit, // current colors
+              uint8_t*, // font in memory
+              uint8_t*, // screen in memory
+              bool,     // accept input?
+              Position, // caret position
+              uint8_t); // alpha value
 
   private:
     void drawBackground();
-    void drawShell(uint8_t*, uint8_t*);
+    void drawShell(uint8_t*, uint8_t*, bool, Position);
     void drawBitmap(uint8_t*);
 
     Position offset;
