@@ -43,8 +43,18 @@ void Screen::setNextTerminal(int id) {
   nextTerminal = id;
 }
 
+bool Screen::isAtTerminal() {
+  return currentTerminal != -1;
+}
+
+void Screen::setCurrentTerminal() {
+  currentTerminal = nextTerminal;
+  if (isAtTerminal() && !terminal()->isActive())
+    terminal()->turnOn();
+}
+
 Terminal* Screen::terminal() {
-  if (currentTerminal != -1)
+  if (isAtTerminal())
     return terminals[currentTerminal];
   return NULL;
 }
@@ -64,7 +74,7 @@ void Screen::fadeOut() {
   fade -= fadeSpeed * Graphics::I()->dt();
   if (fade < 0) {
     fade = 0;
-    currentTerminal = nextTerminal;
+    setCurrentTerminal();
   }
 }
 

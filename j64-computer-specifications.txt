@@ -1,0 +1,31 @@
+j64 - 8-bit system with 64k ram
+
+0xFFFF => available memory, each address contains a 0xFF value
+
+0x0000 - 0x000F => stack values
+0x0010 - 0x0012 => current address pointer
+0x0013 - 0x0015 => previous address pointer
+0x0016 - 0x0018 => program counter
+
+0x0020 - 0x002F => keyboard input bits (16 0xFF values, 128 bits)
+0x0030 - 0x0032 => input position
+
+0x0040 => current screen mode (0 = shell, 1 = bitmap)
+
+0x0041 - 0x00FF => reserved
+
+0x0100 - 0x08FF => font memory
+
+0x0900 - 0x0FFF => reserved
+
+0x1000 - 0x7FFF => user space (unused by system)
+
+0x8000 - 0x83FF => screen memory when in shell mode (0xFF - character)
+0x8401 => y (row) of input
+0x8402 => x (column) of input
+0x8403 => blink counter
+
+0x8000 - 0xFCFF => screen memory when in bitmap mode (0xFF - 2 pixels)
+
+0xFD00 => current colors (0xF0 - background, 0x0F - foreground)
+0xFD01 - 0xFD31 => color addresses (RR, GG, BB)

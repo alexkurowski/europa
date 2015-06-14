@@ -4,6 +4,9 @@ Character::Character(SDL_Rect* baseRect) {
   sprite.texture = Graphics::I()->loadTexture("assets/images/character.png");
   Graphics::I()->setSize(&sprite);
 
+  target.texture = Graphics::I()->loadTexture("assets/images/character_target.png");
+  Graphics::I()->setSize(&target);
+
   move.position.x = 500;
   move.position.y = 500;
 
@@ -26,10 +29,32 @@ void Character::update() {
 }
 
 void Character::draw() {
+  if (move.position.y > move.target.y) {
+    drawTarget();
+    drawCharacter();
+  } else {
+    drawCharacter();
+    drawTarget();
+  }
+
+}
+
+//=============================================================================
+
+void Character::drawCharacter() {
   sprite.rect.x = (int)(move.position.x - sprite.rect.w / 2);
   sprite.rect.y = (int)(move.position.y - sprite.rect.h);
 
   Graphics::I()->draw(sprite.texture, &sprite.rect);
+}
+
+void Character::drawTarget() {
+  if (!isStanding()) {
+    target.rect.x = (int)(move.target.x - target.rect.w / 2);
+    target.rect.y = (int)(move.target.y - target.rect.h);
+
+    Graphics::I()->draw(target.texture, &target.rect);
+  }
 }
 
 //=============================================================================

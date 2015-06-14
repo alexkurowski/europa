@@ -40,12 +40,13 @@ void Graphics::setup(int width, int height, const char* title) {
 
   setScale();
 
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+
   if (window == NULL)
     throw "SDL_CreateWindow Error";
 
   surface  = SDL_GetWindowSurface(window);
   renderer = SDL_CreateRenderer(window, -1, 0);
-  // texture  = SDL_CreateTextureFromSurface(renderer, surface);
 
   rect = new SDL_Rect();
 }
@@ -85,11 +86,11 @@ void Graphics::setScale() {
                currentSize.h / (double)originalSize.h);
 
   termScale = 2;
-  if (currentSize.w > TERMINAL_WIDTH * 4 &&
-      currentSize.h > TERMINAL_HEIGHT * 4)
+  if (currentSize.w > TERMINAL_SCREEN_WIDTH * 4 &&
+      currentSize.h > TERMINAL_SCREEN_HEIGHT * 4)
     termScale = 4;
-  if (currentSize.w > TERMINAL_WIDTH * 6 &&
-      currentSize.h > TERMINAL_HEIGHT * 6)
+  if (currentSize.w > TERMINAL_SCREEN_WIDTH * 6 &&
+      currentSize.h > TERMINAL_SCREEN_HEIGHT * 6)
     termScale = 6;
 }
 
@@ -132,8 +133,8 @@ void Graphics::screenScale() {
 
 Position Graphics::getScreenScaledOffset() {
   Position pos;
-  pos.x = (currentSize.w / 2 - TERMINAL_WIDTH * termScale / 2) / termScale;
-  pos.y = (currentSize.h / 2 - TERMINAL_HEIGHT * termScale / 2) / termScale;
+  pos.x = (currentSize.w / 2 - TERMINAL_SCREEN_WIDTH * termScale / 2) / termScale;
+  pos.y = (currentSize.h / 2 - TERMINAL_SCREEN_HEIGHT * termScale / 2) / termScale;
   return pos;
 }
 

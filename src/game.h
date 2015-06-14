@@ -4,6 +4,7 @@
 #include "states/state.h"
 #include "states/play.h"
 #include "../lib/graphics.h"
+#include "../lib/keyboard.h"
 
 class Game {
   public:
@@ -19,7 +20,7 @@ class Game {
   private:
     SDL_Event event;
 
-    unsigned int frame  = 0;
+    unsigned int frame = 0;
     unsigned int sec = 0;
 
     State* state;

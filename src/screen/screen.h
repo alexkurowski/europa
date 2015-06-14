@@ -15,6 +15,7 @@ class Screen {
     void draw();
 
     void setNextTerminal(int);
+    bool isAtTerminal();
     Terminal* terminal();
 
   private:
@@ -27,6 +28,8 @@ class Screen {
 
     int termCount = 0;
     Terminal* terminals[TERMINAL_COUNT];
+
+    void setCurrentTerminal();
 
     void updateFade();
     void fadeIn();

@@ -29,6 +29,9 @@ class Character {
     void update();
     void draw();
 
+    void drawCharacter();
+    void drawTarget();
+
     void moveTo(Position);
     void updateMove();
     void keepInside(SDL_Rect*);
@@ -37,6 +40,7 @@ class Character {
 
   private:
     Texture sprite;
+    Texture target;
 
     Movement move;
 

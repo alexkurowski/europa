@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "lib/graphics.h"
+#include "lib/keyboard.h"
 #include "src/game.h"
 
 const int ORIGINAL_WIDTH  = 1920;
@@ -16,6 +17,7 @@ Game* game = NULL;
 int main() {
   // Initializations
   Graphics::I()->setup(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, WINDOW_TITLE);
+  Keyboard::I()->setup();
 
   game = new Game();
 
@@ -26,7 +28,9 @@ int main() {
 
     game->input();
 
+    Keyboard::I()->update();
     game->update();
+    Keyboard::I()->after();
 
     Graphics::I()->beginDraw();
     game->draw();

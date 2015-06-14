@@ -8,6 +8,7 @@ EXE = -o $(EXE_NAME)
 SOURCES  = main.cpp
 SOURCES += lib/data.h
 SOURCES += lib/graphics.cpp
+SOURCES += lib/keyboard.cpp
 SOURCES += src/game.cpp
 
 SOURCES += src/base/base.cpp
