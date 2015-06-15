@@ -2,7 +2,8 @@
 
 Terminal::Terminal() {
   mem     = new Memory();
-  display = new Display();
+  display = new Display(mem);
+  shell   = new Shell(mem);
 
   std::srand(time(NULL));
 }
@@ -16,20 +17,24 @@ void Terminal::update() {
   if (!isActive())  return;
   if (isSleeping()) return;
 
-  // input();
+  mem->setInputBits( Keyboard::I()->getKeys( mem->isInShell() ) );
+  if (mem->isInBitmap())
+    updateProgram();
+  else
+    updateShell();
+}
+
+void Terminal::updateProgram() {
+}
+
+void Terminal::updateShell() {
+  shell->update();
 }
 
 void Terminal::draw(uint8_t alpha) {
   if (!isActive()) return;
 
-  display->draw(mem->screenMode(),
-                mem->getColors(),
-                mem->getCurrentColors(),
-                mem->fontAddress(),
-                mem->screenAddress(),
-                mem->isAcceptInput(),
-                mem->inputPosition(),
-                alpha);
+  display->draw(alpha);
 }
 
 //=============================================================================
@@ -49,6 +54,7 @@ bool Terminal::isActive() {
 }
 
 //=============================================================================
+// SLEEP CALLBACKS
 
 void Terminal::afterBoot() {
   mem->reboot();
@@ -60,6 +66,7 @@ void Terminal::beforeInput() {
 }
 
 //=============================================================================
+// SLEEP FUNCTIONALITY
 
 void Terminal::setSleep(float time, void (Terminal::*fn)()) {
   sleep = time;

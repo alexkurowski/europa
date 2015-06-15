@@ -14,8 +14,11 @@ Keyboard* Keyboard::I() {
 }
 
 void Keyboard::setup() {
-  for (int i = 0; i < INPUT_LENGTH; i++)
+  for (int i = 0; i < INPUT_LENGTH; i++) {
     keys[i] = -1;
+    shellKeys[i]  = false;
+    bitmapKeys[i] = false;
+  }
 
   for (int i = 0; i < 4; i++)
     arrowKeys[i] = -1;
@@ -23,6 +26,7 @@ void Keyboard::setup() {
 
 void Keyboard::update() {
   updateShellKeys();
+  updateBitmapKeys();
 
   for (int i = 0; i < INPUT_LENGTH; i++)
     if (keys[i] >= 0 && keys[i] < ignoreEnd)
@@ -54,6 +58,8 @@ void Keyboard::keyEvent(SDL_KeyboardEvent& event) {
     modKeys[2] = down;
   if (event.keysym.sym == SDLK_DELETE)
     modKeys[3] = down;
+  if (event.keysym.sym == SDLK_ESCAPE)
+    modKeys[4] = down;
 
   if (event.keysym.sym == SDLK_LEFT)
     arrowKeys[0] = idown;
@@ -68,14 +74,26 @@ void Keyboard::keyEvent(SDL_KeyboardEvent& event) {
 //=============================================================================
 
 bool Keyboard::isDownShell(float value) {
-  if (value >= 0 && !(value > ignoreStart && value < ignoreEnd))
-    return true;
-  else
-    return false;
+  return value >= 0 && !(value > ignoreStart && value < ignoreEnd);
 }
 
-shellInputKeys* Keyboard::getShellKeys() {
-  return &shellKeys;
+bool Keyboard::isDownBitmap(float value) {
+  return value >= 0;
+}
+
+bool* Keyboard::getKeys(bool shellMode) {
+  if (shellMode)
+    return getShellKeys();
+  else
+    return getBitmapKeys();
+}
+
+bool* Keyboard::getShellKeys() {
+  return shellKeys;
+}
+
+bool* Keyboard::getBitmapKeys() {
+  return bitmapKeys;
 }
 
 bool* Keyboard::getModKeys() {
@@ -89,20 +107,44 @@ float* Keyboard::getArrowKeys() {
 //=============================================================================
 
 void Keyboard::updateShellKeys() {
-  for (int i = 32; i <= 126; i++)
-    shellKeys.text[i] = isDownShell(keys[i]);
+  for (int i = CHAR_TEXT_START; i <= CHAR_TEXT_END; i++)
+    shellKeys[getTextInputKey(i)] = isDownShell(keys[i]);
 
-  shellKeys.Backspace = isDownShell(keys[8]);
-  shellKeys.Delete    = isDownShell(keys[127]);
-  shellKeys.Enter     = isDownShell(keys[13]);
+  shellKeys[CHAR_ARROW_LEFT]  = isDownShell(arrowKeys[0]);
+  shellKeys[CHAR_ARROW_RIGHT] = isDownShell(arrowKeys[1]);
+  shellKeys[CHAR_ARROW_UP]    = isDownShell(arrowKeys[2]);
+  shellKeys[CHAR_ARROW_DOWN]  = isDownShell(arrowKeys[3]);
 
-  shellKeys.Left  = isDownShell(arrowKeys[0]);
-  shellKeys.Right = isDownShell(arrowKeys[1]);
-  shellKeys.Up    = isDownShell(arrowKeys[2]);
-  shellKeys.Down  = isDownShell(arrowKeys[3]);
+  shellKeys[CHAR_BACKSPACE] = isDownShell(keys[8]);
+  shellKeys[CHAR_DELETE]    = isDownShell(keys[127]);
+  shellKeys[CHAR_ENTER]     = isDownShell(keys[13]);
+
+  shellKeys[CHAR_SHIFT]  = modKeys[0];
+  shellKeys[CHAR_CTRL]   = modKeys[1];
+  shellKeys[CHAR_ALT]    = modKeys[2];
+  shellKeys[CHAR_ESCAPE] = modKeys[3];
 }
 
-int Keyboard::getShellInputKey(int i) {
+void Keyboard::updateBitmapKeys() {
+  for (int i = CHAR_TEXT_START; i <= CHAR_TEXT_END; i++)
+    bitmapKeys[getTextInputKey(i)] = isDownBitmap(keys[i]);
+
+  bitmapKeys[CHAR_ARROW_LEFT]  = isDownBitmap(arrowKeys[0]);
+  bitmapKeys[CHAR_ARROW_RIGHT] = isDownBitmap(arrowKeys[1]);
+  bitmapKeys[CHAR_ARROW_UP]    = isDownBitmap(arrowKeys[2]);
+  bitmapKeys[CHAR_ARROW_DOWN]  = isDownBitmap(arrowKeys[3]);
+
+  bitmapKeys[CHAR_BACKSPACE] = isDownBitmap(keys[8]);
+  bitmapKeys[CHAR_DELETE]    = isDownBitmap(keys[127]);
+  bitmapKeys[CHAR_ENTER]     = isDownBitmap(keys[13]);
+
+  bitmapKeys[CHAR_SHIFT]  = modKeys[0];
+  bitmapKeys[CHAR_CTRL]   = modKeys[1];
+  bitmapKeys[CHAR_ALT]    = modKeys[2];
+  bitmapKeys[CHAR_ESCAPE] = modKeys[3];
+}
+
+int Keyboard::getTextInputKey(int i) {
   if (i == 32 || i >= 48 && i <= 57 && !modKeys[0]) {
     return i;
   } else
@@ -161,4 +203,5 @@ int Keyboard::getShellInputKey(int i) {
   if (i == 57) {
     return 40;
   }
+  return i;
 }

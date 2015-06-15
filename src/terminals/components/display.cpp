@@ -1,31 +1,27 @@
 #include "display.h"
 
-Display::Display() {
+Display::Display(Memory* m) {
+  mem = m;
   offset = Graphics::I()->getScreenScaledOffset();
 }
 
 Display::~Display() {}
 
-void Display::draw(uint8_t  mode,
-                   colorMap memoryColors,
-                   colorBit memoryCurrentColors,
-                   uint8_t* font,
-                   uint8_t* screen,
-                   bool     acceptInput,
-                   Position inputPosition,
-                   uint8_t  memoryAlpha) {
-
-  colors        = memoryColors;
-  currentColors = memoryCurrentColors;
-  alpha         = memoryAlpha;
+void Display::draw(uint8_t mAlpha) {
+  colors        = mem->getColors();
+  currentColors = mem->getCurrentColors();
+  alpha         = mAlpha;
 
   drawBackground();
-  switch (mode) {
+  switch (mem->screenMode()) {
     case 0: // shell
-      drawShell(screen, font, acceptInput, inputPosition);
+      drawShell(mem->screenAddress(),
+                mem->fontAddress(),
+                mem->isAcceptInput(),
+                mem->inputPosition());
       break;
     case 1: // bitmap
-      drawBitmap(screen);
+      drawBitmap(mem->screenAddress());
       break;
   }
 }
@@ -38,13 +34,6 @@ void Display::drawBackground() {
                            offset.y - BACKGROUND_MARGIN,
                            TERMINAL_SCREEN_WIDTH + BACKGROUND_MARGIN * 2,
                            TERMINAL_SCREEN_HEIGHT + BACKGROUND_MARGIN * 2);
-  // Graphics::I()->setColor(colors[currentColors[1]][0],
-  //                         colors[currentColors[1]][1],
-  //                         colors[currentColors[1]][2], alpha);
-  // Graphics::I()->rectangle(offset.x,
-  //                          offset.y,
-  //                          TERMINAL_SCREEN_WIDTH,
-  //                          TERMINAL_SCREEN_HEIGHT);
 }
 
 void Display::drawShell(uint8_t* screen,

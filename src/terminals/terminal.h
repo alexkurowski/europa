@@ -11,6 +11,7 @@
 
 #include "components/memory.h"
 #include "components/display.h"
+#include "components/shell.h"
 
 // #define TERMINAL_MEMORY     0xFFFF
 // #define TERMINAL_STACK_SIZE 0x0F
@@ -55,8 +56,9 @@ class Terminal {
     bool isActive();
 
   private:
-    Memory* mem;
+    Memory*  mem;
     Display* display;
+    Shell*   shell;
 
     bool active = false;
 
@@ -73,6 +75,8 @@ class Terminal {
     void afterBoot();
     void beforeInput();
 
+    void updateProgram();
+    void updateShell();
     // void resetShell();
     // void readyBeforeInput();
     // void readyInput();

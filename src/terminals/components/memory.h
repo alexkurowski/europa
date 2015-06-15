@@ -67,6 +67,13 @@ class Memory {
 
     void acceptInput();
     void denyInput();
+    void setInputBits(bool*);
+
+
+    void    setByte(uint16_t, uint8_t);
+    uint8_t getByte(uint16_t);
+
+    uint8_t getBit(uint16_t, uint8_t);
 
 
     void clearScreen();
@@ -74,6 +81,9 @@ class Memory {
     void printText(std::string);
     void printLine(std::string);
     void printText(std::string, uint16_t);
+
+    void printChar(char);
+    void printChar(char, uint16_t);
 
     void newLine();
     void newLine(int);

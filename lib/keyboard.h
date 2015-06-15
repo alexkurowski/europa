@@ -3,20 +3,27 @@
 #include <SDL2/SDL.h>
 #include "graphics.h"
 
-#define INPUT_LENGTH 0x80
 
-struct shellInputKeys {
-  bool text[INPUT_LENGTH] = { false };
+#define INPUT_LENGTH       0x80
 
-  bool Delete;
-  bool Backspace;
-  bool Enter;
+#define CHAR_ARROW_UP      1
+#define CHAR_ARROW_LEFT    2
+#define CHAR_ARROW_DOWN    3
+#define CHAR_ARROW_RIGHT   4
 
-  bool Left;
-  bool Right;
-  bool Up;
-  bool Down;
-};
+#define CHAR_BACKSPACE     8
+#define CHAR_DELETE        9
+#define CHAR_ENTER         13
+
+#define CHAR_SHIFT         16
+#define CHAR_CTRL          17
+#define CHAR_ALT           18
+
+#define CHAR_ESCAPE        27
+
+#define CHAR_TEXT_START    32
+#define CHAR_TEXT_END      126
+
 
 class Keyboard {
   public:
@@ -32,11 +39,12 @@ class Keyboard {
     bool isUp(char);
     bool isDown(char);
 
-    shellInputKeys* getShellKeys();
-    bool* getModKeys();
+    bool*  getKeys(bool);
+    bool*  getShellKeys();
+    bool*  getBitmapKeys();
+    bool*  getModKeys();
     float* getArrowKeys();
 
-    int getShellInputKey(int);
 
   private:
     Keyboard();
@@ -47,12 +55,18 @@ class Keyboard {
     static Keyboard* _instance;
 
     float keys[INPUT_LENGTH];
-    shellInputKeys shellKeys;
-    bool modKeys[4] = { false }; // shift, ctrl, alt, delete
+    bool  shellKeys[INPUT_LENGTH];
+    bool  bitmapKeys[INPUT_LENGTH];
+    bool  modKeys[5] = { false }; // shift, ctrl, alt, delete, escape
     float arrowKeys[4] = { 0 }; // left, right, up, down
 
     bool isDownShell(float);
+    bool isDownBitmap(float);
+
     void updateShellKeys();
+    void updateBitmapKeys();
+
+    int  getTextInputKey(int);
 
     uint8_t ignoreStart = 0;
     uint8_t ignoreEnd = 1;

@@ -1,4 +1,4 @@
-j64 - 8-bit system with 64k ram
+6064 - 8-bit system with 64k ram
 
 0xFFFF => available memory, each address contains a 0xFF value
 
@@ -29,3 +29,23 @@ j64 - 8-bit system with 64k ram
 
 0xFD00 => current colors (0xF0 - background, 0x0F - foreground)
 0xFD01 - 0xFD31 => color addresses (RR, GG, BB)
+
+
+---------------------------------------------------------------------------
+
+
+INPUT MAP:
+  1
+2 3 4  arrow keys
+
+8  backspace
+9  delete
+13 enter
+16 shift
+17 ctrl
+18 alt
+27 escape
+
+
+
+32 - 126 (0x20 - 0x7E) => standard ASCII codes

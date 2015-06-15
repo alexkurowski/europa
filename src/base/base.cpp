@@ -48,11 +48,10 @@ int Base::currentTerminal() {
 //=============================================================================
 
 void Base::moveTo(Position pos) {
-  if (pos.x < background.rect.x ||
-      pos.x > background.rect.x + background.rect.w ||
-      pos.y < background.rect.y ||
-      pos.y > background.rect.y + background.rect.h)
-    return;
+  if (pos.x < background.rect.x)                     pos.x = background.rect.x;
+  if (pos.x > background.rect.x + background.rect.w) pos.x = background.rect.x + background.rect.w;
+  if (pos.y < background.rect.y)                     pos.y = background.rect.y;
+  if (pos.y > background.rect.y + background.rect.h) pos.y = background.rect.y + background.rect.h;
 
   alignToTerminal(&pos);
   character->moveTo(pos);

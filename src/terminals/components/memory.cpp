@@ -95,6 +95,25 @@ void Memory::denyInput() {
   m[ACCEPT_INPUT] = 0;
 }
 
+void Memory::setInputBits(bool* keys) {
+  p = KEYBOARD_KEYS;
+  uint8_t bit = 0;
+  uint8_t byte = 0;
+  for (uint8_t i = 0; i < 128; i++) {
+    if (keys[i])
+      byte += (1 << 7 - bit);
+
+    bit++;
+    if (bit < 8) continue;
+
+    m[p] = byte;
+
+    byte = 0;
+    bit  = 0;
+    p++;
+  }
+}
+
 //=============================================================================
 
 uint16_t Memory::currentInputAddress() {
@@ -107,6 +126,19 @@ uint16_t Memory::currentInputLineAddress() {
 
 //=============================================================================
 
+void Memory::setByte(uint16_t addr, uint8_t val) {
+  m[addr] = val;
+}
+
+uint8_t Memory::getByte(uint16_t addr) {
+  return m[addr];
+}
+
+uint8_t Memory::getBit(uint16_t addr, uint8_t pos) {
+  return getBitAt(m[addr], 7 - pos % 8);
+}
+
+//=============================================================================
 void Memory::clearScreen() {
   p  = SCREEN_ADDRESS;
   _p = isInBitmap() ? BITMAP_MODE_END : SHELL_MODE_END;
@@ -130,6 +162,14 @@ void Memory::printText(std::string text, uint16_t address) {
   }
 
   newLine((text.length() + SHELL_WIDTH - 1) / SHELL_WIDTH);
+}
+
+void Memory::printChar(char ch) {
+  printChar(ch, currentInputAddress());
+}
+
+void Memory::printChar(char ch, uint16_t addr) {
+  m[addr] = ch;
 }
 
 void Memory::newLine() {

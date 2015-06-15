@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "../../../lib/data.h"
 #include "../../../lib/graphics.h"
+#include "memory.h"
 
 
 #define TERMINAL_SCREEN_WIDTH  320
@@ -22,17 +23,10 @@
 
 class Display {
   public:
-    Display();
+    Display(Memory*);
     ~Display();
 
-    void draw(uint8_t,  // screen mode
-              colorMap, // colors
-              colorBit, // current colors
-              uint8_t*, // font in memory
-              uint8_t*, // screen in memory
-              bool,     // accept input?
-              Position, // caret position
-              uint8_t); // alpha value
+    void draw(uint8_t);
 
   private:
     void drawBackground();
@@ -44,4 +38,6 @@ class Display {
     uint8_t alpha;
     colorMap colors;
     colorBit currentColors;
+
+    Memory* mem;
 };
