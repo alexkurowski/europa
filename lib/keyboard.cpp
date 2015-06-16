@@ -145,6 +145,12 @@ void Keyboard::updateBitmapKeys() {
 }
 
 int Keyboard::getTextInputKey(int i) {
+  // ignore shift modified letters
+  if (i == 64  || i == 126 || i == 63 ||
+      i == 60  || i == 62  || i == 94 ||
+      i == 123 || i == 125 || i == 95 ||
+      i == 124) return 0;
+
   if (i == 32 || i >= 48 && i <= 57 && !modKeys[0]) {
     return i;
   } else
@@ -180,28 +186,22 @@ int Keyboard::getTextInputKey(int i) {
     else            return i;
   } else
   if (i == 48) {
-    return 41;
-  } else
-  if (i == 49) {
-    return 33;
+    return i - 7;
   } else
   if (i == 50) {
-    return 64;
+    return i + 14;
   } else
-  if (i >= 51 && i <= 53) {
+  if (i == 49 || i >= 51 && i <= 53) {
     return i - 16;
   } else
   if (i == 54) {
-    return 94;
+    return i + 40;
   } else
-  if (i == 55) {
-    return 38;
+  if (i == 55 || i == 57) {
+    return i - 17;
   } else
   if (i == 56) {
-    return 42;
-  } else
-  if (i == 57) {
-    return 40;
+    return i - 14;
   }
   return i;
 }

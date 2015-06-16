@@ -122,6 +122,11 @@ void Shell::submit() {
   } else
   if (args[0] == "LIST") {
     mem->printText(listText);
+  } else
+  if (args[0] == "CLEAR") {
+    mem->clearScreen();
+    mem->setByte(INPUT_ROW, 0);
+    mem->setByte(INPUT_COL, 0);
   } else {
     mem->printText(errorText);
   }

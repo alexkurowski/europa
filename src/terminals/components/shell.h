@@ -39,12 +39,16 @@ class Shell {
 
 
     const std::string errorText = "?SYNTAX ERROR                           ";
+
     const std::string helpText  = " LIST      - DISPLAY NAMES OF AVAILABLE "
                                   "             PROGRAMS                   "
                                   " RUN NAME  - RUN PROGRAM WITH A GIVEN   "
                                   "             NAME                       "
                                   " EDIT NAME - LOAD PROGRAM WITH A GIVEN  "
                                   "             NAME AND OPEN EDITOR       "
-                                  " REBOOT    - RESTART THE TERMINAL       ";
+                                  " REBOOT    - RESTART THE TERMINAL AND   "
+                                  "             RESET MEMORY               "
+                                  " CLEAR     - CLEAR THE TERMINAL SCREEN  ";
+
     const std::string listText  = " SUCK  FUCK  BUCK                       ";
 };
