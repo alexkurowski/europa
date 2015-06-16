@@ -76,9 +76,14 @@ class Memory {
     uint8_t getBit(uint16_t, uint8_t);
 
 
+    uint16_t currentInputAddress();
+    uint16_t currentInputLineAddress();
+
+
     void clearScreen();
 
     void printText(std::string);
+    void printText(std::string, bool);
     void printLine(std::string);
     void printText(std::string, uint16_t);
 
@@ -86,7 +91,8 @@ class Memory {
     void printChar(char, uint16_t);
 
     void newLine();
-    void newLine(int);
+    int  newLine(int);
+    void shiftTextUp();
 
   private:
     uint16_t p;
@@ -95,10 +101,6 @@ class Memory {
     uint8_t stack[STACK_SIZE];
 
     uint8_t temp;
-
-
-    uint16_t currentInputAddress();
-    uint16_t currentInputLineAddress();
 
 
     colorMap colors;
@@ -133,14 +135,4 @@ class Memory {
                                      "                                        ";
 
     const std::string newInputLine = "READY.                                  ";
-    const std::string helpText     = " LIST      - DISPLAY NAMES OF AVAILABLE "
-                                     "             PROGRAMS                   "
-                                     " RUN NAME  - RUN PROGRAM WITH A GIVEN   "
-                                     "             NAME                       "
-                                     " EDIT NAME - LOAD PROGRAM WITH A GIVEN  "
-                                     "             NAME AND OPEN EDITOR       "
-                                     "                                        ";
-
-
-
 };

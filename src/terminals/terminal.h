@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <iostream>
 #include <random>
 #include <algorithm>
 #include "../../lib/graphics.h"
@@ -74,9 +75,14 @@ class Terminal {
 
     void afterBoot();
     void beforeInput();
+    void readyInput();
 
     void updateProgram();
     void updateShell();
+
+    void shellMessage(std::string);
+
+
     // void resetShell();
     // void readyBeforeInput();
     // void readyInput();

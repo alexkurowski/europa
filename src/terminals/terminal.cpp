@@ -29,6 +29,7 @@ void Terminal::updateProgram() {
 
 void Terminal::updateShell() {
   shell->update();
+  shellMessage(shell->getMessage());
 }
 
 void Terminal::draw(uint8_t alpha) {
@@ -58,10 +59,14 @@ bool Terminal::isActive() {
 
 void Terminal::afterBoot() {
   mem->reboot();
-  setSleep(inputDelay, &Terminal::beforeInput);
+  beforeInput();
 }
 
 void Terminal::beforeInput() {
+  setSleep(inputDelay, &Terminal::readyInput);
+}
+
+void Terminal::readyInput() {
   mem->acceptInput();
 }
 
@@ -94,6 +99,21 @@ bool Terminal::isSleeping() {
 }
 
 //=============================================================================
+// SHELL COMMANDS
+
+void Terminal::shellMessage(std::string message) {
+  if (message == "") return;
+
+  mem->denyInput();
+
+  if (message == "reboot") {
+    turnOn();
+  }
+
+  if (message == "new line") {
+    beforeInput();
+  }
+}
 
 // void Terminal::input() {
 //   if (memory[SCREEN_MODE] == 0)

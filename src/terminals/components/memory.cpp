@@ -81,13 +81,14 @@ void Memory::buildDefaultRAM() {
 
 void Memory::reboot() {
   clearScreen();
-  printText(greetText, SCREEN_ADDRESS);
+  printText(greetText, static_cast<uint16_t>(SCREEN_ADDRESS));
 }
 
 //=============================================================================
 
 void Memory::acceptInput() {
-  printText(newInputLine);
+  newLine();
+  printText(newInputLine, false);
   m[ACCEPT_INPUT] = 1;
 }
 
@@ -148,6 +149,11 @@ void Memory::clearScreen() {
 }
 
 void Memory::printText(std::string text) {
+  printText(text, true);
+}
+
+void Memory::printText(std::string text, bool newline) {
+  if (newline) newLine();
   printText(text, currentInputAddress());
 }
 
@@ -156,12 +162,20 @@ void Memory::printLine(std::string text) {
 }
 
 void Memory::printText(std::string text, uint16_t address) {
+  uint8_t lines = (text.length() + SHELL_WIDTH - 1) / SHELL_WIDTH;
+
+  uint8_t addedLines = newLine(lines - 1);
   p = address;
+
+  if (addedLines > 0) {
+    p -= SHELL_WIDTH * addedLines;
+  }
+
   for (int i = 0; i < text.length(); i++) {
     m[p++] = text[i];
   }
 
-  newLine((text.length() + SHELL_WIDTH - 1) / SHELL_WIDTH);
+  newLine();
 }
 
 void Memory::printChar(char ch) {
@@ -176,10 +190,30 @@ void Memory::newLine() {
   newLine(1);
 }
 
-void Memory::newLine(int lines) {
+int Memory::newLine(int lines) {
+  int shiftedLines = 0;
+
   for (int i = 0; i < lines; i++) {
-    m[INPUT_ROW]++;
+    if (m[INPUT_ROW] < SHELL_HEIGHT - 1) {
+      m[INPUT_ROW]++;
+    } else {
+      shiftTextUp();
+      shiftedLines++;
+    }
   }
+
   m[INPUT_COL] = 0;
+  return shiftedLines;
+}
+
+void Memory::shiftTextUp() {
+  p  = SCREEN_ADDRESS;
+  _p = SHELL_MODE_END - SHELL_WIDTH;
+
+  for (uint16_t i = p; i < _p; i++)
+    m[i] = m[i + SHELL_WIDTH];
+
+  for (uint16_t i = _p; i < SHELL_MODE_END; i++)
+    m[i] = 0;
 }
 
