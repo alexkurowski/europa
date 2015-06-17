@@ -30,12 +30,24 @@ class Shell {
     void setArgs();
     void submit();
 
+
     bool isKeyDown(char);
 
     void moveCaretLeft();
     void moveCaretRight();
     void moveInputLineLeft();
     void moveInputLineRight();
+
+
+    void commandRun(std::string);
+    void commandEdit(std::string);
+    void commandList();
+    void commandHelp();
+    void commandClear();
+    void commandReboot();
+    void commandQuit();
+    void commandError();
+    void commandDefault();
 
 
     const std::string errorText = "?SYNTAX ERROR                           ";

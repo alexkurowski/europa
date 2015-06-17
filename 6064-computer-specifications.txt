@@ -31,7 +31,7 @@
 0xFD01 - 0xFD31 => color addresses (RR, GG, BB)
 
 
----------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 
 INPUT MAP:
@@ -49,3 +49,77 @@ INPUT MAP:
 
 
 32 - 126 (0x20 - 0x7E) => standard ASCII codes
+
+
+-------------------------------------------------------------------------------
+
+# stack empty
+PSH 6 # A
+PSH 2 # B
+DIV   # gives A / B : |3|
+
+MOV, PSH, POP, SWP
+NEG,
+ADD, MUL, DIV
+AND, BOR, XOR
+JMP, RET
+IFZ, IFN, IFG
+
+0x00  mov
+0x01  psh
+0x02  pop
+0x03  swp
+0x04  add
+0x05  mul
+0x06  div
+0x07  neg
+0x08  and
+0x09  bor
+0x0A  xor
+0x0B  ifz
+0x0C  ifn
+0x0D  ifg
+0x0E  jmp
+0x0F  ret
+
+psh 10
+psh 3
+sub
+pop # => 7
+
+psh 10
+psh 3
+neg
+add
+pop # => 7
+
+
+
+
+
+MOV $A      => move memory pointer to address $A
+MOV A       => move memory pointer left / right on arbitrary number of addresses
+
+PSH A       => push value A to the stack
+PSH         => copy value under the memory pointer and push to stack
+POP         => put top (element % 256) to the address under the pointer
+SWP         => swap two top values from the stack
+
+NEG         => treat top value as negative (-255 - 0)
+
+ADD         => pop two values from the stack and push their sum
+SUB         => pop two values from the stack and push their difference (B - A)
+MUL         => pop two values from the stack and push their multiplication
+DIV         => pop two values from the stack and push their diviison (B / A)
+
+AND         => pop two values from stack and push (A & B)
+BOR         => pop two values from stack and push (A | B)
+XOR         => pop two values from stack and push (A ^ B)
+
+JMP LABEL   => jump to the label and store current pointer
+JMP A       => jump arbitrary number of lines down / up
+RET         => return to the previous JMP statement + 1
+
+IFZ         => execute next line only if top stack value is zero
+IFN         => execute next line only if top stack value is not zero
+IFG         => execute next line only if top stack value is greater than zero

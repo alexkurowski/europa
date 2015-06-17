@@ -111,26 +111,64 @@ void Shell::setArgs() {
 }
 
 void Shell::submit() {
-  if (args.size() == 0 || args[0] == "")
+  std::string c = args[0];
+  if (args.size() == 0 || c == "")
     return;
 
-  if (args[0] == "REBOOT") {
-    messageToTerminal = "reboot";
-  } else
-  if (args[0] == "HELP") {
-    mem->printText(helpText);
-  } else
-  if (args[0] == "LIST") {
-    mem->printText(listText);
-  } else
-  if (args[0] == "CLEAR") {
-    mem->clearScreen();
-    mem->setByte(INPUT_ROW, 0);
-    mem->setByte(INPUT_COL, 0);
-  } else {
-    mem->printText(errorText);
-  }
+  if (c == "RUN")                 commandRun(args[1]);
+  else
+  if (c == "EDIT")                commandEdit(args[1]);
+  else
+  if (c == "REBOOT")              commandReboot();
+  else
+  if (c == "QUIT" || c == "EXIT") commandQuit();
+  else
+  if (c == "HELP" || c == "?")    commandHelp();
+  else
+  if (c == "LIST")                commandList();
+  else
+  if (c == "CLEAR")               commandClear();
+  else
+                                  commandError();
 
+  commandDefault();
+}
+
+void Shell::commandRun(std::string name) {
+  if (name == "REMOTE") messageToTerminal = "run remote";
+  if (name == "MAIL")   messageToTerminal = "run mail";
+}
+
+void Shell::commandEdit(std::string name) {
+}
+
+void Shell::commandList() {
+  mem->printText(listText);
+}
+
+void Shell::commandHelp() {
+  mem->printText(helpText);
+}
+
+void Shell::commandClear() {
+  mem->clearScreen();
+  mem->setByte(INPUT_ROW, 0);
+  mem->setByte(INPUT_COL, 0);
+}
+
+void Shell::commandReboot() {
+  messageToTerminal = "reboot";
+}
+
+void Shell::commandQuit() {
+  messageToTerminal = "quit";
+}
+
+void Shell::commandError() {
+  mem->printText(errorText);
+}
+
+void Shell::commandDefault() {
   if (messageToTerminal == "")
     messageToTerminal = "new line";
 }

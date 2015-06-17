@@ -4,6 +4,7 @@ Terminal::Terminal() {
   mem     = new Memory();
   display = new Display(mem);
   shell   = new Shell(mem);
+  prog    = new Program(mem);
 
   std::srand(time(NULL));
 }
@@ -18,13 +19,14 @@ void Terminal::update() {
   if (isSleeping()) return;
 
   mem->setInputBits( Keyboard::I()->getKeys( mem->isInShell() ) );
-  if (mem->isInBitmap())
+  if (prog->isLoaded())
     updateProgram();
   else
     updateShell();
 }
 
 void Terminal::updateProgram() {
+  prog->update();
 }
 
 void Terminal::updateShell() {
@@ -108,6 +110,14 @@ void Terminal::shellMessage(std::string message) {
 
   if (message == "reboot") {
     turnOn();
+  }
+
+  if (message == "quit") {
+    turnOff();
+  }
+
+  if (message == "run remote") {
+    prog->load("remote");
   }
 
   if (message == "new line") {

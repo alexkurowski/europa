@@ -18,6 +18,7 @@ SOURCES += src/screen/screen.cpp
 
 SOURCES += src/terminals/components/display.cpp
 SOURCES += src/terminals/components/shell.cpp
+SOURCES += src/terminals/components/program.cpp
 SOURCES += src/terminals/components/memory.cpp
 SOURCES += src/terminals/terminal.cpp
 

@@ -13,6 +13,7 @@
 #include "components/memory.h"
 #include "components/display.h"
 #include "components/shell.h"
+#include "components/program.h"
 
 // #define TERMINAL_MEMORY     0xFFFF
 // #define TERMINAL_STACK_SIZE 0x0F
@@ -60,6 +61,7 @@ class Terminal {
     Memory*  mem;
     Display* display;
     Shell*   shell;
+    Program* prog;
 
     bool active = false;
 
