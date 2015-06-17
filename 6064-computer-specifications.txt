@@ -123,3 +123,18 @@ RET         => return to the previous JMP statement + 1
 IFZ         => execute next line only if top stack value is zero
 IFN         => execute next line only if top stack value is not zero
 IFG         => execute next line only if top stack value is greater than zero
+
+
+
+
+
+===============================================================================
+
+
+TODO:
+
+Convert addresses in asm from hex.
+
+Add all the commands.
+
+Decide where to put DEV command.

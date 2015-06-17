@@ -1,0 +1,26 @@
+# This line should be ignored
+               # This one too
+MOV $8000
+POP 72
+  MOV 1
+POP 69
+  MOV 1
+POP 76
+  MOV 1
+POP 76
+  MOV 1
+POP 79
+  MOV 1
+POP 32
+  MOV 1
+POP 87
+  MOV 1
+POP 79
+  MOV 1
+POP 82
+  MOV 1
+POP 76
+  MOV 1
+POP 68
+  MOV 1
+POP 33

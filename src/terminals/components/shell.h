@@ -2,7 +2,10 @@
 
 #include <stdint.h>
 #include <vector>
+#include <algorithm>
+#include <string>
 #include "memory.h"
+#include "../../../lib/tinydir.h"
 #include "../../../lib/keyboard.h"
 
 class Shell {
@@ -61,6 +64,4 @@ class Shell {
                                   " REBOOT    - RESTART THE TERMINAL AND   "
                                   "             RESET MEMORY               "
                                   " CLEAR     - CLEAR THE TERMINAL SCREEN  ";
-
-    const std::string listText  = " SUCK  FUCK  BUCK                       ";
 };

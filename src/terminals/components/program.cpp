@@ -9,7 +9,7 @@ Program::~Program() {}
 
 //=============================================================================
 
-void Program::load(const char* filename) {
+void Program::load(std::string filename) {
   std::vector<std::string> content;
   std::ifstream file(filename);
   if (file == NULL) return;
@@ -30,6 +30,7 @@ bool Program::compile(std::vector<std::string>* str, uint32_t size) {
   set.clear();
   labels.clear();
   jumpMap.clear();
+  stack.clear();
 
   std::string whitespace = " \t\f\v\n\r";
   std::string comment    = "#;/\"";
@@ -124,7 +125,8 @@ bool Program::addInstruction(std::string instruction, std::string argument) {
     a = fetchJump(argument);
   } else
   if (argument.at(0) == '$') {
-    a = 1000000 + std::stoi( argument.substr(1, argument.length() - 1) );
+    const char* ch = argument.substr(1, argument.length() - 1).c_str();
+    a = 1000000 + std::strtoul( ch, NULL, 16 );
   } else {
     a = std::stoi(argument);
   }
@@ -219,39 +221,89 @@ bool Program::isLoaded() {
 //=============================================================================
 
 void Program::MOV() {
-  mem->setByte(CURRENT_ADDRESS, argGetAddress());
+  if (argIsAddress())
+    mem->setAddress(argGetAddress());
+  else
+    mem->setAddress(mem->getAddress() + set[pc].argument);
 }
 
 void Program::PSH() {
-  if (argIsNull()) {
-    // push value from memory to stack
-  } else {
-    // push argument to stack
-  }
+  if (argIsNull())
+    stack.insert(stack.begin(), mem->getByte());
+  else
+    stack.insert(stack.begin(), set[pc].argument);
+
+  if (stack.size() > STACK_SIZE)
+    stack.pop_back();
 }
 
 void Program::POP() {
   if (argIsNull()) {
-    // pop value from stack to memory
+    if (stack.size() > 0) {
+      mem->setByte(stack[0]);
+      stack.erase(stack.begin());
+    } else {
+      mem->setByte(0);
+    }
   } else {
-    // pop argument to memory
     mem->setByte(set[pc].argument);
   }
 }
 
 void Program::SWP() {
+  if (stack.size() < 2) return;
+  uint16_t temp = stack.at(0);
+  stack.at(0) = stack.at(1);
+  stack.at(1) = temp;
 }
 
 void Program::ADD() {
+  if (stack.size() < 1)
+    stack.insert(stack.begin(), 0);
+
+  if (argIsNull()) {
+    if (stack.size() < 2)
+      stack.insert(stack.begin(), 0);
+    stack.at(0) += stack.at(1);
+    stack.erase(stack.begin() + 1);
+  } else {
+    stack.at(0) += set[pc].argument;
+  }
 }
 
 void Program::MUL() {
+  if (stack.size() < 1)
+    stack.insert(stack.begin(), 0);
+
+  if (argIsNull()) {
+    if (stack.size() < 2)
+      stack.insert(stack.begin(), 0);
+    stack.at(0) *= stack.at(1);
+    stack.erase(stack.begin() + 1);
+  } else {
+    stack.at(0) *= set[pc].argument;
+  }
 }
 
 void Program::DIV() {
+  if (stack.size() < 1)
+    stack.insert(stack.begin(), 0);
+
+  if (argIsNull()) {
+    if (stack.size() < 2)
+      stack.insert(stack.begin(), 0);
+    stack.at(0) = stack.at(1) / stack.at(0);
+    stack.erase(stack.begin() + 1);
+  } else {
+    stack.at(0) /= set[pc].argument;
+  }
 }
 
 void Program::NEG() {
+  if (stack.size() < 1)
+    stack.insert(stack.begin(), 0);
+
+  stack.at(0) *= -1;
 }
 
 void Program::AND() {
@@ -264,15 +316,34 @@ void Program::XOR() {
 }
 
 void Program::IFZ() {
+  if (stack.size() < 1)
+    stack.insert(stack.begin(), 0);
+
+  if (stack.at(0) != 0) pc++;
 }
 
 void Program::IFN() {
+  if (stack.size() < 1)
+    stack.insert(stack.begin(), 0);
+
+  if (stack.at(0) == 0) pc++;
 }
 
 void Program::IFG() {
+  if (stack.size() < 1)
+    stack.insert(stack.begin(), 0);
+
+  if (stack.at(0) <= set[pc].argument) pc++;
 }
 
 void Program::JMP() {
+  std::string name = fetchJump(set[pc].argument) + ":";
+  for (int i = 0; i < labels.size(); i++) {
+    if (labels[i].name == name) {
+      pc = labels[i].pos - 1;
+      return;
+    }
+  }
 }
 
 void Program::RET() {

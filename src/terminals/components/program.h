@@ -21,11 +21,11 @@ typedef struct {
 
 typedef struct {
   std::string name;
-  uint32_t pos;
+  uint32_t    pos;
 } Label;
 
 typedef struct {
-  uint32_t id;
+  uint32_t    id;
   std::string name;
 } Jump;
 
@@ -34,7 +34,7 @@ class Program {
     Program(Memory*);
     ~Program();
 
-    void load(const char*);
+    void load(std::string);
 
     void update();
 
@@ -45,22 +45,21 @@ class Program {
 
     bool compile(std::vector<std::string>*, uint32_t);
 
-    bool addInstruction(std::string, std::string);
-    void addLabel(std::string, uint32_t);
-    uint32_t fetchJump(std::string);
+    bool        addInstruction(std::string, std::string);
+    void        addLabel(std::string, uint32_t);
+    uint32_t    fetchJump(std::string);
     std::string fetchJump(uint32_t);
 
-    bool argIsAddress();
-    bool argIsNull();
+    bool     argIsAddress();
+    bool     argIsNull();
     uint32_t argGetAddress();
 
     bool loaded;
 
-    Instruction* current;
-
     std::vector<Instruction> set;
     std::vector<Label>       labels;
     std::vector<Jump>        jumpMap;
+    std::vector<int16_t>     stack;
     uint32_t pc;
 
     uint32_t cycle;

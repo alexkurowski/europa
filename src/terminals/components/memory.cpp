@@ -132,11 +132,24 @@ void Memory::setByte(uint16_t addr, uint8_t val) {
 }
 
 void Memory::setByte(uint8_t val) {
-  m[m[CURRENT_ADDRESS]] = val;
+  m[getAddress()] = val;
 }
 
 uint8_t Memory::getByte(uint16_t addr) {
   return m[addr];
+}
+
+uint8_t Memory::getByte() {
+  return m[getAddress()];
+}
+
+void Memory::setAddress(uint16_t value) {
+  m[CURRENT_ADDRESS]     = (value & 0xFF00) >> 8;
+  m[CURRENT_ADDRESS + 1] = (value & 0x00FF);
+}
+
+uint16_t Memory::getAddress() {
+  return (m[CURRENT_ADDRESS] << 8) + m[CURRENT_ADDRESS + 1];
 }
 
 uint8_t Memory::getBit(uint16_t addr, uint8_t pos) {

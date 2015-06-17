@@ -135,15 +135,41 @@ void Shell::submit() {
 }
 
 void Shell::commandRun(std::string name) {
-  if (name == "REMOTE") messageToTerminal = "run remote";
-  if (name == "MAIL")   messageToTerminal = "run mail";
+  for (int i = 0; i < name.length(); i++) {
+    name[i] = std::tolower(name[i]);
+  }
+  messageToTerminal = "run " + name; //std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+  // if (name == "REMOTE") messageToTerminal = "run remote";
+  // if (name == "MAIL")   messageToTerminal = "run mail";
 }
 
 void Shell::commandEdit(std::string name) {
 }
 
 void Shell::commandList() {
-  mem->printText(listText);
+  std::string files = " ";
+
+  tinydir_dir dir;
+  tinydir_open(&dir, "./asm");
+
+  while (dir.has_next) {
+    tinydir_file file;
+    tinydir_readfile(&dir, &file);
+
+    if (!file.is_dir &&
+        file.name[0] != '.') {
+      for (int i = 0; i < sizeof(file.name); i++) {
+        file.name[i] = std::toupper(file.name[i]);
+      }
+      files += file.name;
+      files += "   ";
+    }
+
+    tinydir_next(&dir);
+  }
+  tinydir_close(&dir);
+
+  mem->printText(files);
 }
 
 void Shell::commandHelp() {

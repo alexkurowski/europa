@@ -1,0 +1,42 @@
+MOV $8000
+
+PSH 40
+LOOP:
+  POP 33
+  MOV 1
+  PSH 1
+  NEG
+  ADD
+  IFN
+    JMP LOOP
+
+MOV $8000
+PSH 24
+A:
+  MOV 40
+  POP 33
+  PSH 1
+  NEG
+  ADD
+  IFN
+    JMP A
+
+PSH 39
+B:
+  MOV 1
+  POP 33
+  PSH 1
+  NEG
+  ADD
+  IFN
+    JMP B
+
+PSH 24
+C:
+  MOV -40
+  POP 33
+  PSH 1
+  NEG
+  ADD
+  IFN
+    JMP C

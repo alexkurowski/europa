@@ -72,6 +72,10 @@ class Memory {
     void    setByte(uint16_t, uint8_t);
     void    setByte(uint8_t);
     uint8_t getByte(uint16_t);
+    uint8_t getByte();
+
+    void     setAddress(uint16_t);
+    uint16_t getAddress();
 
     uint8_t getBit(uint16_t, uint8_t);
 

@@ -120,10 +120,14 @@ void Terminal::shellMessage(std::string message) {
     turnOff();
   }
 
-  if (message == "run remote") {
+  if (message.substr(0, 3) == "run") {
     beforeProgram();
+    mem->newLine();
     mem->clearScreen();
-    prog->load("remote");
+    prog->load("asm/" + message.substr(4, message.length() - 4));
+    if (!prog->isLoaded()) {
+      turnOn();
+    }
   }
 
   if (message == "new line") {
