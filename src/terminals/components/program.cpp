@@ -22,6 +22,8 @@ void Program::load(const char* filename) {
 
   if (compile(&content, size))
     loaded = true;
+
+  pc = 0;
 }
 
 bool Program::compile(std::vector<std::string>* str, uint32_t size) {
@@ -73,8 +75,6 @@ bool Program::compile(std::vector<std::string>* str, uint32_t size) {
       else
         return false;
     }
-
-    std::cout << instruction << '=' << argument << std::endl;
   }
 
   return true;
@@ -118,7 +118,7 @@ bool Program::addInstruction(std::string instruction, std::string argument) {
     return false;
 
   if (argument.empty()) {
-    a = 0;
+    a = -1000000;
   } else
   if (instruction == "JMP") {
     a = fetchJump(argument);
@@ -146,10 +146,68 @@ uint32_t Program::fetchJump(std::string name) {
   return jumpMap.size() - 1;
 }
 
+std::string Program::fetchJump(uint32_t id) {
+  for (int i = 0; i < jumpMap.size(); i++) {
+    if (jumpMap[i].id == id)
+      return jumpMap[i].name;
+  }
+}
+
+bool Program::argIsAddress() {
+  return set[pc].argument >= 1000000;
+}
+
+bool Program::argIsNull() {
+  return set[pc].argument <= -1000000;
+}
+
+uint32_t Program::argGetAddress() {
+  return set[pc].argument - 1000000;
+}
+
 //=============================================================================
 
 void Program::update() {
-  std::cout << "PROG UPDATE" << std::endl;
+  for (cycle = 0; cycle < CYCLES_PER_UPDATE; cycle++) {
+    if (pc < 0 || pc > set.size()) break;
+
+    switch (set[pc].command) {
+      case 0:  MOV();
+               break;
+      case 1:  PSH();
+               break;
+      case 2:  POP();
+               break;
+      case 3:  SWP();
+               break;
+      case 4:  ADD();
+               break;
+      case 5:  MUL();
+               break;
+      case 6:  DIV();
+               break;
+      case 7:  NEG();
+               break;
+      case 8:  AND();
+               break;
+      case 9:  BOR();
+               break;
+      case 10: XOR();
+               break;
+      case 11: IFZ();
+               break;
+      case 12: IFN();
+               break;
+      case 13: IFG();
+               break;
+      case 14: JMP();
+               break;
+      case 15: RET();
+               break;
+    }
+
+    pc++;
+  }
 }
 
 //=============================================================================
@@ -161,12 +219,24 @@ bool Program::isLoaded() {
 //=============================================================================
 
 void Program::MOV() {
+  mem->setByte(CURRENT_ADDRESS, argGetAddress());
 }
 
 void Program::PSH() {
+  if (argIsNull()) {
+    // push value from memory to stack
+  } else {
+    // push argument to stack
+  }
 }
 
 void Program::POP() {
+  if (argIsNull()) {
+    // pop value from stack to memory
+  } else {
+    // pop argument to memory
+    mem->setByte(set[pc].argument);
+  }
 }
 
 void Program::SWP() {

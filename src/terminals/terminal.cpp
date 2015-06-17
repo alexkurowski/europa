@@ -72,6 +72,10 @@ void Terminal::readyInput() {
   mem->acceptInput();
 }
 
+void Terminal::beforeProgram() {
+  setSleep(runDelay);
+}
+
 //=============================================================================
 // SLEEP FUNCTIONALITY
 
@@ -117,6 +121,8 @@ void Terminal::shellMessage(std::string message) {
   }
 
   if (message == "run remote") {
+    beforeProgram();
+    mem->clearScreen();
     prog->load("remote");
   }
 

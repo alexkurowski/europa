@@ -20,7 +20,6 @@
 
 
 #define CURRENT_ADDRESS  0x0010
-#define PREVIOUS_ADDRESS 0x0012
 
 #define KEYBOARD_KEYS    0x0020
 #define SCREEN_MODE      0x0040
@@ -71,6 +70,7 @@ class Memory {
 
 
     void    setByte(uint16_t, uint8_t);
+    void    setByte(uint8_t);
     uint8_t getByte(uint16_t);
 
     uint8_t getBit(uint16_t, uint8_t);

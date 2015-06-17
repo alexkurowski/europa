@@ -1,14 +1,13 @@
 # This line should be ignored
                # This one too
-MOV $1123
-PSH
-PSH 10
-ADD
-PSH -5
-ADD
+MOV $64
+POP 1
 
-LABEL: # IGNORE ME
-  # ME TOO
-  MOV $1321  # ayy
-  POP
-  JMP LABEL
+MOV $32800
+POP 2
+MOV $32801
+POP 3
+MOV $32803
+POP 4
+MOV $32804
+POP 5

@@ -11,6 +11,8 @@
 
 #define MAX_SIZE 0xFFFF
 
+#define CYCLES_PER_UPDATE 100
+
 
 typedef struct {
   uint8_t command;
@@ -46,14 +48,22 @@ class Program {
     bool addInstruction(std::string, std::string);
     void addLabel(std::string, uint32_t);
     uint32_t fetchJump(std::string);
+    std::string fetchJump(uint32_t);
+
+    bool argIsAddress();
+    bool argIsNull();
+    uint32_t argGetAddress();
 
     bool loaded;
+
+    Instruction* current;
 
     std::vector<Instruction> set;
     std::vector<Label>       labels;
     std::vector<Jump>        jumpMap;
     uint32_t pc;
 
+    uint32_t cycle;
 
     void MOV();
 

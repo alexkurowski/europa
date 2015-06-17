@@ -74,10 +74,12 @@ class Terminal {
 
     const float bootTime   = 0.6; // 1.2
     const float inputDelay = 0.6;
+    const float runDelay = 1.2;
 
     void afterBoot();
     void beforeInput();
     void readyInput();
+    void beforeProgram();
 
     void updateProgram();
     void updateShell();
