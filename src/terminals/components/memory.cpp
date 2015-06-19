@@ -148,6 +148,10 @@ void Memory::setAddress(uint16_t value) {
   m[CURRENT_ADDRESS + 1] = (value & 0x00FF);
 }
 
+void Memory::moveAddress(uint16_t value) {
+  setAddress(getAddress() + value);
+}
+
 uint16_t Memory::getAddress() {
   return (m[CURRENT_ADDRESS] << 8) + m[CURRENT_ADDRESS + 1];
 }

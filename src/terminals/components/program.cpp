@@ -23,13 +23,13 @@ void Program::load(std::string filename) {
   if (compile(&content, size))
     loaded = true;
 
-  pc = 0;
+  pc  = 0;
+  ret = 0;
 }
 
 bool Program::compile(std::vector<std::string>* str, uint32_t size) {
   set.clear();
   labels.clear();
-  jumpMap.clear();
   stack.clear();
 
   std::string whitespace = " \t\f\v\n\r";
@@ -69,7 +69,7 @@ bool Program::compile(std::vector<std::string>* str, uint32_t size) {
     }
 
     if (instruction.back() == ':') {
-      addLabel(instruction, i);
+      setLabelPosition(instruction, i);
     } else {
       if (addInstruction(instruction, argument))
         i++;
@@ -82,78 +82,59 @@ bool Program::compile(std::vector<std::string>* str, uint32_t size) {
 }
 
 bool Program::addInstruction(std::string instruction, std::string argument) {
-  uint8_t i;
   int32_t a;
-  if (instruction == "MOV") i = 0;
-  else
-  if (instruction == "PSH") i = 1;
-  else
-  if (instruction == "POP") i = 2;
-  else
-  if (instruction == "SWP") i = 3;
-  else
-  if (instruction == "ADD") i = 4;
-  else
-  if (instruction == "MUL") i = 5;
-  else
-  if (instruction == "DIV") i = 6;
-  else
-  if (instruction == "NEG") i = 7;
-  else
-  if (instruction == "AND") i = 8;
-  else
-  if (instruction == "BOR") i = 9;
-  else
-  if (instruction == "XOR") i = 10;
-  else
-  if (instruction == "IFZ") i = 11;
-  else
-  if (instruction == "IFN") i = 12;
-  else
-  if (instruction == "IFG") i = 13;
-  else
-  if (instruction == "JMP") i = 14;
-  else
-  if (instruction == "RET") i = 15;
-  else
+
+  if (instruction.length() != 3)
     return false;
 
   if (argument.empty()) {
     a = -1000000;
   } else
   if (instruction == "JMP") {
-    a = fetchJump(argument);
+    a = getLabelId(argument);
   } else
   if (argument.at(0) == '$') {
     const char* ch = argument.substr(1, argument.length() - 1).c_str();
     a = 1000000 + std::strtoul( ch, NULL, 16 );
+  } else
+  if (argument.at(0) == 'x') {
+    const char* ch = argument.substr(1, argument.length() - 1).c_str();
+    a = std::strtoul( ch, NULL, 16 );
+  } else
+  if (argument.at(0) == 'b') {
+    const char* ch = argument.substr(1, argument.length() - 1).c_str();
+    a = std::strtoul( ch, NULL, 2 );
   } else {
     a = std::stoi(argument);
   }
 
-  set.push_back(Instruction {i, a});
+  set.push_back(Instruction {instruction, a});
   return true;
 }
 
-void Program::addLabel(std::string name, uint32_t p) {
-  labels.push_back(Label {name, p});
+void Program::setLabelPosition(std::string name, uint32_t p) {
+  name = name.substr(0, name.length() - 1);
+  for (int i = 0; i < labels.size(); i++) {
+    if (labels[i].name == name)
+      labels[i].pos = p;
+  }
+  labels.push_back(Label {static_cast<uint32_t>(labels.size()), name, p});
 }
 
-uint32_t Program::fetchJump(std::string name) {
-  for (int i = 0; i < jumpMap.size(); i++) {
-    if (jumpMap[i].name == name)
-      return jumpMap[i].id;
+uint32_t Program::getLabelId(std::string name) {
+  for (int i = 0; i < labels.size(); i++) {
+    if (labels[i].name == name)
+      return labels[i].id;
   }
-  jumpMap.push_back(Jump {static_cast<uint32_t>(jumpMap.size()), name});
-  return jumpMap.size() - 1;
+  labels.push_back(Label {static_cast<uint32_t>(labels.size()), name, 0});
+  return labels.size() - 1;
 }
 
-std::string Program::fetchJump(uint32_t id) {
-  for (int i = 0; i < jumpMap.size(); i++) {
-    if (jumpMap[i].id == id)
-      return jumpMap[i].name;
-  }
+uint32_t Program::getLabelPos(uint32_t id) {
+  return labels[id].pos;
 }
+
+//=============================================================================
 
 bool Program::argIsAddress() {
   return set[pc].argument >= 1000000;
@@ -167,46 +148,80 @@ uint32_t Program::argGetAddress() {
   return set[pc].argument - 1000000;
 }
 
+uint32_t Program::argument() {
+  if (argIsNull())    return 0;
+  if (argIsAddress()) return argGetAddress();
+  return set[pc].argument;
+}
+
+//=============================================================================
+
+void Program::stackEnsure(uint8_t size) {
+  for (uint8_t i = 0; i < size; i++) {
+    if (stack.size() < i)
+      stackPush(0);
+  }
+}
+
+uint16_t Program::stackTop() {
+  stackEnsure(1);
+  return stack.at(0);
+}
+
+uint16_t Program::stackSecond() {
+  stackEnsure(2);
+  return stack.at(1);
+}
+
+void Program::stackPush(uint16_t value) {
+  stack.insert(stack.begin(), value);
+  stackLimit();
+}
+
+uint16_t Program::stackPop() {
+  if (stack.size() < 1) return 0;
+  t16 = stack.at(0);
+  stackRemove();
+  return t16;
+}
+
+void Program::stackSwap() {
+  stackEnsure(2);
+  t16 = stack.at(0);
+  stack.at(0) = stack.at(1);
+  stack.at(1) = t16;
+}
+
+void Program::stackRemove() {
+  stack.erase(stack.begin());
+}
+
+void Program::stackLimit() {
+  while (stack.size() > STACK_SIZE)
+    stack.pop_back();
+}
+
 //=============================================================================
 
 void Program::update() {
   for (cycle = 0; cycle < CYCLES_PER_UPDATE; cycle++) {
-    if (pc < 0 || pc > set.size()) break;
+    if (pc < 0 || pc >= set.size()) break;
 
-    switch (set[pc].command) {
-      case 0:  MOV();
-               break;
-      case 1:  PSH();
-               break;
-      case 2:  POP();
-               break;
-      case 3:  SWP();
-               break;
-      case 4:  ADD();
-               break;
-      case 5:  MUL();
-               break;
-      case 6:  DIV();
-               break;
-      case 7:  NEG();
-               break;
-      case 8:  AND();
-               break;
-      case 9:  BOR();
-               break;
-      case 10: XOR();
-               break;
-      case 11: IFZ();
-               break;
-      case 12: IFN();
-               break;
-      case 13: IFG();
-               break;
-      case 14: JMP();
-               break;
-      case 15: RET();
-               break;
-    }
+         if (set[pc].command == "MOV") MOV();
+    else if (set[pc].command == "PSH") PSH();
+    else if (set[pc].command == "POP") POP();
+    else if (set[pc].command == "SWP") SWP();
+    else if (set[pc].command == "ADD") ADD();
+    else if (set[pc].command == "MUL") MUL();
+    else if (set[pc].command == "DIV") DIV();
+    else if (set[pc].command == "NEG") NEG();
+    else if (set[pc].command == "AND") AND();
+    else if (set[pc].command == "NOR") NOR();
+    else if (set[pc].command == "IFZ") IFZ();
+    else if (set[pc].command == "IFN") IFN();
+    else if (set[pc].command == "IFG") IFG();
+    else if (set[pc].command == "JMP") JMP();
+    else if (set[pc].command == "RET") RET();
 
     pc++;
   }
@@ -222,129 +237,152 @@ bool Program::isLoaded() {
 
 void Program::MOV() {
   if (argIsAddress())
-    mem->setAddress(argGetAddress());
+    mem->setAddress(argument());
+  else if (argIsNull())
+    mem->moveAddress(stackTop());
   else
-    mem->setAddress(mem->getAddress() + set[pc].argument);
+    mem->moveAddress(argument());
 }
 
 void Program::PSH() {
   if (argIsNull())
-    stack.insert(stack.begin(), mem->getByte());
+    stackPush(mem->getByte());
   else
-    stack.insert(stack.begin(), set[pc].argument);
-
-  if (stack.size() > STACK_SIZE)
-    stack.pop_back();
+    stackPush(argument());
 }
 
 void Program::POP() {
-  if (argIsNull()) {
-    if (stack.size() > 0) {
-      mem->setByte(stack[0]);
-      stack.erase(stack.begin());
-    } else {
-      mem->setByte(0);
-    }
-  } else {
-    mem->setByte(set[pc].argument);
-  }
+  if (argIsNull())
+    mem->setByte(stackPop());
+  else
+    mem->setByte(argument());
 }
 
 void Program::SWP() {
-  if (stack.size() < 2) return;
-  uint16_t temp = stack.at(0);
-  stack.at(0) = stack.at(1);
-  stack.at(1) = temp;
+  stackSwap();
+}
+
+void Program::REM() {
+  stackRemove();
 }
 
 void Program::ADD() {
-  if (stack.size() < 1)
-    stack.insert(stack.begin(), 0);
+  stackEnsure(1);
 
   if (argIsNull()) {
-    if (stack.size() < 2)
-      stack.insert(stack.begin(), 0);
+    stackEnsure(2);
     stack.at(0) += stack.at(1);
     stack.erase(stack.begin() + 1);
   } else {
-    stack.at(0) += set[pc].argument;
+    stack.at(0) += argument();
+  }
+}
+
+void Program::SUB() {
+  stackEnsure(1);
+
+  if (argIsNull()) {
+    stackEnsure(2);
+    stack.at(0) = stack.at(1) - stack.at(0);
+    stack.erase(stack.begin() + 1);
+  } else {
+    stack.at(0) -= argument();
   }
 }
 
 void Program::MUL() {
-  if (stack.size() < 1)
-    stack.insert(stack.begin(), 0);
+  stackEnsure(1);
 
   if (argIsNull()) {
-    if (stack.size() < 2)
-      stack.insert(stack.begin(), 0);
+    stackEnsure(2);
     stack.at(0) *= stack.at(1);
     stack.erase(stack.begin() + 1);
   } else {
-    stack.at(0) *= set[pc].argument;
+    stack.at(0) *= argument();
   }
 }
 
 void Program::DIV() {
-  if (stack.size() < 1)
-    stack.insert(stack.begin(), 0);
+  stackEnsure(1);
 
   if (argIsNull()) {
-    if (stack.size() < 2)
-      stack.insert(stack.begin(), 0);
+    stackEnsure(2);
     stack.at(0) = stack.at(1) / stack.at(0);
     stack.erase(stack.begin() + 1);
   } else {
-    stack.at(0) /= set[pc].argument;
+    stack.at(0) /= argument();
   }
 }
 
 void Program::NEG() {
-  if (stack.size() < 1)
-    stack.insert(stack.begin(), 0);
-
+  stackEnsure(1);
   stack.at(0) *= -1;
 }
 
 void Program::AND() {
+  stackEnsure(1);
+
+  if (argIsNull()) {
+    stackEnsure(2);
+    stack.at(0) = stack.at(1) & stack.at(0);
+    stack.erase(stack.begin() + 1);
+  } else {
+    stack.at(0) &= argument();
+  }
 }
 
-void Program::BOR() {
-}
+void Program::NOR() {
+  stackEnsure(1);
 
-void Program::XOR() {
+  if (argIsNull()) {
+    stackEnsure(2);
+    stack.at(0) = ~(stack.at(1) | stack.at(0));
+    stack.erase(stack.begin() + 1);
+  } else {
+    stack.at(0) = ~(stack.at(0) | argument());
+  }
 }
 
 void Program::IFZ() {
-  if (stack.size() < 1)
-    stack.insert(stack.begin(), 0);
-
+  stackEnsure(1);
   if (stack.at(0) != 0) pc++;
 }
 
 void Program::IFN() {
-  if (stack.size() < 1)
-    stack.insert(stack.begin(), 0);
-
+  stackEnsure(1);
   if (stack.at(0) == 0) pc++;
 }
 
 void Program::IFG() {
-  if (stack.size() < 1)
-    stack.insert(stack.begin(), 0);
-
-  if (stack.at(0) <= set[pc].argument) pc++;
-}
-
-void Program::JMP() {
-  std::string name = fetchJump(set[pc].argument) + ":";
-  for (int i = 0; i < labels.size(); i++) {
-    if (labels[i].name == name) {
-      pc = labels[i].pos - 1;
-      return;
-    }
+  stackEnsure(1);
+  if (argIsNull()) {
+    stackEnsure(2);
+    if (stack.at(1) <= stack.at(0)) pc++;
+  } else {
+    if (stack.at(0) <= argument()) pc++;
   }
 }
 
-void Program::RET() {
+void Program::IFL() {
+  stackEnsure(1);
+  if (argIsNull()) {
+    stackEnsure(2);
+    if (stack.at(1) >= stack.at(0)) pc++;
+  } else {
+    if (stack.at(0) >= argument()) pc++;
+  }
 }
+
+void Program::JMP() {
+  pc = getLabelPos(argument()) - 1;
+}
+
+void Program::JSR() {
+  ret = pc;
+  pc = getLabelPos(argument()) - 1;
+}
+
+void Program::RET() {
+  pc = ret;
+}
+

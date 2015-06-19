@@ -1,4 +1,4 @@
-MOV $8000
+MOV x8000
 
 PSH 40
 LOOP:

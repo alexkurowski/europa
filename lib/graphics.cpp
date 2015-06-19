@@ -157,6 +157,15 @@ void Graphics::point(int x, int y) {
   SDL_RenderDrawPoint(renderer, x, y);
 }
 
+void Graphics::scaledPoint(int x, int y) {
+  rect->x = x;
+  rect->y = y;
+  rect->w = termScale;
+  rect->h = termScale;
+
+  SDL_RenderFillRect(renderer, rect);
+}
+
 void Graphics::line(int x1, int y1, int x2, int y2) {
   SDL_RenderDrawLine(renderer, x1,
                                y1,

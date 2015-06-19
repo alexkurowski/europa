@@ -93,6 +93,12 @@ neg
 add
 pop # => 7
 
+psh 0x1
+MOV 0x8000
+
+PSH xFF
+AND b11001010
+
 
 
 

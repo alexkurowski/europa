@@ -39,6 +39,7 @@ class Graphics {
     void setColor(int r, int g, int b, int a = 255);
     void setBlendMode(const char*);
     void point(int, int);
+    void scaledPoint(int, int);
     void line(int, int, int, int);
     void rectangle(int, int, int, int);
     void rectangle(SDL_Rect*);

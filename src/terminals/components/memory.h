@@ -6,19 +6,21 @@
 
 
 #define MEMORY_SIZE      0xFFFF
-#define STACK_SIZE       0x000F
+#define STACK_SIZE       16
 
-#define SHELL_WIDTH      0x0028
-#define SHELL_HEIGHT     0x0019
+#define SHELL_WIDTH      40
+#define SHELL_HEIGHT     25
 
-#define BITMAP_WIDTH     0x0140
-#define BITMAP_HEIGHT    0x00C8
-
-
-#define SHELL_MODE       0x0000
-#define BITMAP_MODE      0x0001
+#define BITMAP_WIDTH     320
+#define BITMAP_HEIGHT    200
 
 
+// SCREEN MODES (address 0x0040)
+#define SHELL_MODE       0
+#define BITMAP_MODE      1
+
+
+// ADRESSES
 #define CURRENT_ADDRESS  0x0010
 
 #define KEYBOARD_KEYS    0x0020
@@ -75,6 +77,7 @@ class Memory {
     uint8_t getByte();
 
     void     setAddress(uint16_t);
+    void     moveAddress(uint16_t);
     uint16_t getAddress();
 
     uint8_t getBit(uint16_t, uint8_t);

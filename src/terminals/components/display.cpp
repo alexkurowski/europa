@@ -63,8 +63,8 @@ void Display::drawShell(uint8_t* screen,
         Graphics::I()->setColor(colors[col][0],
                                 colors[col][1],
                                 colors[col][2], alpha);
-        Graphics::I()->point(x + i + offset.x,
-                             y + j + offset.y);
+        Graphics::I()->scaledPoint(x + i + offset.x,
+                                   y + j + offset.y);
       }
     }
 
